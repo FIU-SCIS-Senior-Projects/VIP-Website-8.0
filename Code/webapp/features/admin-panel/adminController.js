@@ -534,8 +534,8 @@ function selectedItemChange(item) {
 		function handleFile(e) {
 			if (document.getElementById('courseFileInput').value) {
 				var files = e.target.files, fileSource = files[0];
-				var reader = new FileReader();
-				reader.onload = function(e) {
+				var reader = new FileReader();				
+				reader.onload = function(e) {					
 					vm.addCourseData = parseXLS(e.target.result);
 				};
 				reader.readAsText(fileSource);
@@ -568,19 +568,40 @@ function selectedItemChange(item) {
 				//console.log("courseMatch:", file, file.match(/[A-Z]{3}\s+[0-9]{4}\s+-\s+[A-Z0-9]+\s+([0-9]+)/));
 				// Try to match a segment of the file name with a course from a current semester
 				var found = false;
+				var selectIndex = -1;
+				var indexQuality = -1;
+				file = file.toUpperCase();
 				vm.courses.forEach(function (course, index) {
 					currentTerms.forEach(function (cTerm) {
 						if (course.semester == cTerm) {
-							if (file.match('(' + course.course_id + ')')) {
-								console.log("course found");
-								// Update course selection box
-								$scope.syncCourseSelect = vm.courses[index];
-								document.getElementById('syncCourseSelect').selectedIndex = index+1;
-								found = true;
+							if (file.indexOf(course.number) != -1 && 
+								file.indexOf(course.subject.toUpperCase()) != -1 && 
+								file.indexOf(course.section.toUpperCase()) != -1) {
+
+								selectIndex = index;
+								indexQuality = 3;
+							}
+							else if (file.indexOf(course.number) != -1 && file.indexOf(course.subject.toUpperCase()) != -1) {
+								if (indexQuality < 2) { selectIndex = index; indexQuality = 2;}
+							}
+							else if (file.indexOf(course.number) != -1) {
+								if (indexQuality < 1) { selectIndex = index; indexQuality = 1;}
+							}
+							else if (file.indexOf(course.subject.toUpperCase()) != -1) {		
+								if (indexQuality < 0) { selectIndex = index; indexQuality = 0;}						
 							}
 						}
 					});
 				});
+				//console.log("indexQuality: ", indexQuality);
+				if (selectIndex != -1) {
+					console.log("course found");
+					// Update course selection box
+					$scope.syncCourseSelect = vm.courses[selectIndex];
+					document.getElementById('syncCourseSelect').selectedIndex = selectIndex+1;
+					found = true;
+				}
+
 				// Create a course object that would represent this course File
 				if (!found) {
 					console.log("course not found");
@@ -798,52 +819,50 @@ function selectedItemChange(item) {
 		};
 
 		// Parse XLS file into readable data
-		function parseXLS(file) {
-			var entries = file.split(/<\s*tr\s*>/);
-			//console.log('entries:', entries);
-			var users = [];
-			// Determine which column contains which information
-			var columns = entries[1].split(/<\s*th\s*>/);
-			var indexes = {
-				pid: -1, email: -1, name: -1
-			};
-			for (var i=1; i<columns.length; i++) {
-				if (columns[i].match(/ID/))
-					indexes.pid = i;
-				if (columns[i].match(/Email/))
-					indexes.email = i;
-				if (columns[i].match(/Name/))
-					indexes.name = i;
+		function parseXLS(file) {			
+			var entries = file.split("\n"); // Splits at the end of line. entries has the rows now
+			
+			if (entries[entries.length-1] == null || entries[entries.length-1] == "") {
+				entries.pop(); // Sometimes the file has an empty line at the end. This will remove it.
 			}
-			//console.log('indexes:', indexes);
-			if (indexes.pid == -1 || indexes.email == -1 || indexes.name == -1) {
-				// Missing indexes, return null as a flag that parsing failed
-				return null;
-			}
-			else {
-				for (var i=2; i<entries.length; i++) {
-					try {
-						var entryData = entries[i].split(/<\s*td\s*>/);
-						//console.log('entryData:', entryData);
-
-						var pid = entryData[indexes.pid].split(/<\s*\/\s*td\s*>/);
-						var email = entryData[indexes.email].split(/<\s*\/\s*td\s*>/);
-						var name = entryData[indexes.name].split(/<\s*\/\s*td\s*>/);
-						var nameTokens = name[0].split(',');
-						var firstAndMidName = nameTokens[1].split(' ');
-						var newUser = {
-							pantherID: pid[0],
-							email: email[0],
-							firstName: firstAndMidName[0],
-							lastName: nameTokens[0]
-						};
-						//console.log('newUser:', newUser);
-						users.push(newUser);
-					}
-					catch (err) { /* Don't push data that cannot be parsed */ }
+			
+			var users = [];			
+			for (var i=0; i<entries.length; i++) {
+				var rowArr = entries[i].split("::");
+				if (rowArr.length != 3) {
+					alert("Incorrect file format: Not all entries have three columns. Row:" + (i+1));
+					return null;
+				}	
+				
+				var pID = rowArr[1];
+				if (pID.length != 7) {
+					alert("Incorrect file format: PantherID length is not equal to 7. Row: " + (i+1));
+					return null;
 				}
-				return users;
+
+				var userLoginName = rowArr[0].toLowerCase();
+				var fullName = rowArr[2];
+				var email = userLoginName + "@fiu.edu";
+				var lastNameFirst4 = userLoginName.slice(1, 5);				
+				if (fullName.toLowerCase().indexOf(lastNameFirst4) == -1){
+					alert("Incorrect file format: Student name does not match login user name structure. Row: " + (i+1));
+					return null;
+				}
+				var firstAndMidName = fullName.slice(0, fullName.toLowerCase().indexOf(lastNameFirst4)-1);
+				var lastName = fullName.slice(fullName.toLowerCase().indexOf(lastNameFirst4), fullName.length);
+			
+				var newUser = {
+					pantherID: pID,
+					email: email,
+					firstName: firstAndMidName,
+					lastName: lastName,
+					userType: "Student"
+				};
+
+				users.push(newUser);
 			}
+			console.log('users', users);
+			return users;			
 		};
 
 		// Removes a course file from course file list
@@ -857,6 +876,11 @@ function selectedItemChange(item) {
 
 		// Updates each course with its corresponding courseFile in the database
 		vm.syncDatabase = function() {
+			if (vm.courseFiles.length ==0) { 
+				alert("No data to process. Please add a file/course to the list");
+				return;
+			}
+			
 			// Build map for users for fast lookup
 			var userMap = new Map();
 			vm.allusers.forEach(function (user, index) {
