@@ -528,27 +528,27 @@ function selectedItemChange(item) {
 		// User Story #1346
 
 		vm.addCourseFileName;
-		vm.addCourseData; // Holds the parsed XLS data after onchanged event fires
+		vm.addCourseData; // Holds the parsed TXT data after onchanged event fires
 
-		// Parse the XLS file using File API
+		// Parse the TXT file using File API
 		function handleFile(e) {
 			if (document.getElementById('courseFileInput').value) {
 				var files = e.target.files, fileSource = files[0];
 				var reader = new FileReader();				
 				reader.onload = function(e) {					
-					vm.addCourseData = parseXLS(e.target.result);
+					vm.addCourseData = parseTXT(e.target.result);
 				};
 				reader.readAsText(fileSource);
 
 				// Read fileName and check if existing course exists to set as default course
 				vm.addCourseFileName = document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, '');
-				parseFileName(vm.addCourseFileName);
+				matchOrCreateCourse(vm.addCourseFileName);
 			}
 		};
 		document.getElementById('courseFileInput').addEventListener('change', handleFile, false);
 
 		// Updates the course select box with best fit course given the file name
-		function parseFileName(file) {
+		function matchOrCreateCourse(file) {
 			try {
 				var currentTerms = [], currentTermIndex = -1;
 				vm.terms.forEach(function (term, index) {
@@ -678,7 +678,7 @@ function selectedItemChange(item) {
 						found = true;
 				});
 				if (!found) {
-					// Test whether file data was successfully pulled from xls file
+					// Test whether file data was successfully pulled from TXT file
 					if (vm.addCourseData != null) {
 						// Create the new courseFile and add it to the list
 						var newCourseFile = {
@@ -818,8 +818,8 @@ function selectedItemChange(item) {
 			}
 		};
 
-		// Parse XLS file into readable data
-		function parseXLS(file) {			
+		// Parse TXT file into readable data
+		function parseTXT(file) {			
 			var entries = file.split("\n"); // Splits at the end of line. entries has the rows now
 			
 			if (entries[entries.length-1] == null || entries[entries.length-1] == "") {
