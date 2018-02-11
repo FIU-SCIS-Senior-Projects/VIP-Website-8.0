@@ -42,7 +42,7 @@
 									if(data.data[i].read) {
 										continue;
 									} else {
-                              console.log("HERE")
+                              //console.log("HERE")
 										vm.count++;
 
 										// if (data.data[i].owner == vm.user_type) { //Only count the todo tasks related to the account type.
