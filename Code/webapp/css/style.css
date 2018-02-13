@@ -1051,3 +1051,9 @@ label.small {
 .csv li:after { content: ", "; }
 .csv li:last-child:after { content: ""; }
 
+/* Hide radio buttons for Admin panel navigation*/
+#option1, #option2, #option3, #option4, #option5 {
+    display: none;
+} 
+        
+
