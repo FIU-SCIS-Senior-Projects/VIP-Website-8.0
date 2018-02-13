@@ -20,37 +20,35 @@
   </a>
 </script>
 <div style="width:100%;">
-  <nav>
-    <div class="container-fluid">
-
-      <div class="navbar-header">
-        <a class="navbar-brand" style="color:#333333;">Admin Panel</a>
-      </div>
+  <nav>   
+   <div class="btn-group" data-toggle="buttons">
+    <div class="container-fluid">   
+     <h4>Admin Panel:</h4>
       <ul class="nav navbar-nav" style="padding-right: 1%">
         <li>
-          <button style="float:right;" ng-click="routeAdminMaint()" ng-model="routeUserMaint" class="btn second-button btn-default navbar-btn">
-            Admin Maintenance
-          </button>
+          <label ng-click="routeAdminMaint()" ng-model="routeUserMaint" class="btn btn-primary btn-lg active">
+              <input type="radio" name="options" id="option1" autocomplete="off"> Admin Maintenance
+          </label>
         </li>
         <li>
-          <button style="float:right;" ng-click="routeUserMaint()" ng-model="routeUserMaint" class="btn second-button btn-default navbar-btn">
-            User Maintenance
-          </button>
+          <label ng-click="routeUserMaint()" ng-model="routeUserMaint" class="btn btn-primary btn-lg">
+              <input type="radio" name="options" id="option2" autocomplete="off"> User Maintenance
+          </label>
         </li>
         <li>
-          <button style="float:right;" ng-click="routeProjectMaintenance()" ng-model="routeUserMaint" class="btn second-button btn-default navbar-btn">
-            Project Maintenance
-          </button>
+          <label ng-click="routeProjectMaintenance()" ng-model="routeUserMaint" class="btn btn-primary btn-lg">
+              <input type="radio" name="options" id="option3" autocomplete="off"> Project Maintenance
+          </label>
         </li>
         <li>
-          <button style="float:right;" ng-click="routeSemesterMaintenance()" ng-model="routeUserMaint" class="btn second-button btn-default navbar-btn">
-            Semester Maintenance
-          </button>
+          <label ng-click="routeSemesterMaintenance()" ng-model="routeUserMaint" class="btn btn-primary btn-lg">
+              <input type="radio" name="options" id="optio4" autocomplete="off"> Semester Maintenance
+          </label>
         </li>
         <li>
-          <button style="float:right;" ng-click="routeCourseMaintenance()" ng-model="routeUserMaint" class="btn second-button btn-default navbar-btn">
-            Course Maintenance
-          </button>
+          <label ng-click="routeCourseMaintenance()" ng-model="routeUserMaint" class="btn btn-primary btn-lg">
+              <input type="radio" name="options" id="option5" autocomplete="off"> Course Maintenance
+          </label>
         </li>
       </ul>
       <div class="navbar-header">
@@ -58,6 +56,7 @@
       </div>
     </div>
   </nav>
+</div>
 
   <div ng-show="showAdminPage">
 
