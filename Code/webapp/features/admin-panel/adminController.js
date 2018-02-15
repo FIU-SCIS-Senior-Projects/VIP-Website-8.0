@@ -173,7 +173,7 @@ function selectedItemChange(item) {
         //Out of scope functions
         vm.userTypeChange = userTypeChange;
         vm.userChange = userChange;
-        vm.userinUnconfirmedfunc = userinUnconfirmedfunc;
+		vm.userinUnconfirmedfunc = userinUnconfirmedfunc;
 
         //For out of scope variables:
         vm.userinusertype;
@@ -227,7 +227,40 @@ function selectedItemChange(item) {
         vm.epo = emailProductOwners;
         vm.ses = function(semester) {
           vm.emailSemester = semester.name;
-        }
+		}
+		
+		vm.totalUsersRegisteredFunc = function() {
+			var total = 0;
+			vm.allusers.forEach(function (user, index) {				
+				total+=1			
+			});
+			
+			/*vm.users; //Confirmed users only (Email is verified)
+			vm.allusers; //All confirmed and unconfirmed users
+			vm.unconfirmedusers;//Unconfirmed users (Email is not verified)
+			vm.filteredusers; //filteredusers affected by filter function
+			vm.projects; //Projects that are active
+			vm.courses; // Course list
+			vm.terms;*/
+
+			return total;
+		}
+
+		vm.totalUsersUnconfirmedFunc = function() {
+			var total = 0;
+			vm.unconfirmedusers.forEach(function (user, index) {				
+				total+=1			
+			});
+			return total;
+		}
+
+		vm.totalUsersConfirmedFunc = function() {
+			var total = 0;
+			vm.users.forEach(function (user, index) {				
+				total+=1			
+			});
+			return total;
+		}
 
         function emailProductOwners() {
           var users;
@@ -2785,7 +2818,9 @@ function selectedItemChange(item) {
         //Out of scope function for Confirm/Reject unconfirmed users
         function userinUnconfirmedfunc(user) {
             vm.userinunconfirmed = user;
-        }
+		}	
+
+		
 
         //Confirm unconfirmed users
         function ConfirmUser() {
