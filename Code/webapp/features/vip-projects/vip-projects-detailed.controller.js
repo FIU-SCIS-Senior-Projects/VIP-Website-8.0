@@ -97,6 +97,7 @@
 
         function getProjectById() {
             ProjectService.getProject(vm.id).then(function (data) {
+                /*console.log("data: ", data);
                 if (data.old_project && data.old_project.length > 0) {
                     vm.data = data.old_project[0];
                     console.log(vm.data.owner_name);
@@ -105,7 +106,7 @@
                     console.log(vm.own);
                     //vm.own_mails =
                 }
-                else {
+                else {*/
                     vm.data = data;
                     //console.log("" + vm.data.video_url[0].vidurl);
                     if (vm.data.video_url.length > 0) {
@@ -114,7 +115,7 @@
                       else
                         $scope.iFrameURL = null;
                     }
-                    console.log(vm.data.owner_name);
+                    //console.log(vm.data.owner_name);
 
                     vm.own = vm.data.owner_name.split(', ');
                     vm.newmail = vm.data.owner_email.split(', ');
@@ -124,8 +125,8 @@
                         vm.productOwner.push([vm.own[i], vm.newmail[i]]);
                     }
 
-                    console.log("Productowner array: ");
-                }
+                    //console.log("Productowner array: ", vm.productOwner);
+                //}
                 ProfileService.loadProfile().then(function (data) {
                     profile = data;
                     if (profile) {
@@ -135,7 +136,7 @@
                         else {
                             vm.already_joined = false;
                         }
-                        console.log(vm.already_joined);
+                        //console.log(vm.already_joined);
                     }
                     else {
                         vm.already_joined = false;

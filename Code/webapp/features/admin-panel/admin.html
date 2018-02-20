@@ -63,22 +63,29 @@
     <!-- .................................................... -->
 
     <!-- .................................................... -->
-    
-      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px;">
-        <!-- Default panel contents -->
-        <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Site Summary</h3></div>
+      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px; height: 390px;">
+          <!-- Default panel contents -->
+          <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Site Summary </h3></div>
 
-        <!-- List group -->
+          <!-- List group -->
+          <div class="list-group">              
+            <a title="{{siteSummaryItem.tooltip}}" class="list-group-item" ng-show="{{siteSummaryItem.badgecount}} > -1" ng-repeat="siteSummaryItem in vm.siteSummaryItems" style="padding-bottom: 5px; padding-top: 5px;"><span class="badge" ng-style={{siteSummaryItem.badgecolor}}>{{siteSummaryItem.badgecount}}</span>{{siteSummaryItem.summary}}</a> 
+          </div>
+      </div>
+
+      <!--div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px;">
+        <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Site Summary</h3></div>
         <ul class="list-group">
-          <li class="list-group-item"><span class="badge">{{vm.totalUsersRegisteredFunc()}}</span>Users in the system</li>
-          <li class="list-group-item"><span class="badge">{{vm.totalUsersConfirmedFunc()}}</span>Users Confirmed (email verified)</li>
-          <li class="list-group-item"><span class="badge">{{vm.totalUsersUnconfirmedFunc()}}</span>Users Unconfirmed</li>
+          <li class="list-group-item"><span class="badge" style="background-color: goldenrod">0</span>Projects in the system</li> 
+          <li class="list-group-item"><span class="badge" style="background-color: goldenrod">{{vm.activeProjectsFunc()}}</span>Projects active</li> 
+          <li class="list-group-item"><span class="badge"                                    >{{vm.pendingProjectsFunc()}}</span>Projects pending approval</li> 
+          <li class="list-group-item"><span class="badge" style="background-color: goldenrod">{{vm.totalUsersRegisteredFunc()}}</span>Student/Staff/Faculty in the system</li>
+          <li class="list-group-item"><span class="badge" style="background-color: goldenrod">{{vm.totalUsersConfirmedFunc()}}</span>Student/Staff/Faculty Confirmed (email verified)</li>
+          <li class="list-group-item"><span class="badge" style="background-color: goldenrod">{{vm.totalUsersUnconfirmedFunc()}}</span>Student/Staff/Faculty Unconfirmed</li>
           <li class="list-group-item"><span class="badge">11</span>Staff/Faculty registered</li>
           <li class="list-group-item"><span class="badge">12</span>Staff/Faculty pending approval</li>
-          <li class="list-group-item"><span class="badge">13</span>Projects registered</li>      
-          <li class="list-group-item"><span class="badge">14</span>Projects pending approval</li>
         </ul>
-      </div>
+      </div-->
    
       <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px; height: 390px;">
         <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Unconfirmed Users</h3></div>        
@@ -108,7 +115,7 @@
       </div>   
       
     
-      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px;">  <!-- Admin Email -->       
+      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px; height: 300px;">  <!-- Admin Email -->       
         <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Admin Email</h3></div>
         <p align="center">
           <b>{{vm.adminSettings.current_email}}</b>
@@ -157,7 +164,7 @@
       </div>
       <!--Dafna's code-->
 
-      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px;"> <!-- Email Signature -->
+      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px; height: 300px;"> <!-- Email Signature -->
         <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Email Signature</h3></div>
         <h3 align="center"></h3>
         <div class="form-group">

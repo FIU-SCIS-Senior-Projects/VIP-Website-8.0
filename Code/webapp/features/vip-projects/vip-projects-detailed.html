@@ -85,7 +85,9 @@
                 <div ng-init="ownerLimit = 5">
                     <table class="table student-list">
                         <tr ng-repeat="projowners in vm.productOwner | limitTo: ownerLimit" style="padding:2px;">
-                            <td style="padding:2px; vertical-align: middle;"><a ng-click="vm.redirect2(projowners[1])" class="person_hover">{{projowners[0]}}</a></td>
+                            <td style="padding:2px; vertical-align: middle;">
+                                <a ng-click="vm.redirect2(projowners[1])" class="person_hover">{{projowners[0]}}</a>
+                            </td>
                             <td style="width:50px;">
                                 <a href="/#/sendmessage/{{projowners[1]}}/0/1">
                                 <i ng-if="vm.data.owner != null" class="fa fa-envelope-o fa-lg" ng-show="vm.profile.userType == 'Pi/CoPi' || vm.profile.userType == 'Staff/Faculty'" aria-hidden="true" style="display: inline;"></i>
