@@ -229,19 +229,10 @@
 			vm.emailSemester = semester.name;
 		}
 
-	    /*vm.users; //Confirmed users only (Email is verified)
-		vm.allusers; //All confirmed and unconfirmed users
-		vm.unconfirmedusers;//Unconfirmed users (Email is not verified)
-		vm.filteredusers; //filteredusers affected by filter function
-		vm.projects; //Projects that are active
-		vm.allprojects
-		vm.courses; // Course list
-		vm.terms;*/
-
 		vm.siteSummaryItems;		
 		vm.buildSiteSummary = function () {	
 			vm.siteSummaryItems = [];
-			var total, total1, tooltip;
+			var total, total1, total2, total3, tooltip, tooltip1, tooltip2, tooltip3, total4, tooltip4, total5, tooltip5;
 			var bcR = "style={'background-color':'red'}";
 			var bcG = "style={'background-color':'goldenrod'}";
 
@@ -255,13 +246,43 @@
 				vm.siteSummaryItems.push({summary:"Projects active", badgecount:total,  badgecolor: bcG});
 				vm.siteSummaryItems.push({summary:"Projects active without owner", badgecount:total1,  badgecolor: bcR, tooltip: tooltip});}
 
+			// Terms summary
+			// No current semester selected
+			if (vm.terms != null){
+				total=0;total1=0;
+				vm.terms.forEach(function (term, index) {
+					total+=1;
+					if (term.status.currentSemester) {
+						total1+=1;
+					}
+				});
+				if (total != 0 && total == total1){
+					vm.siteSummaryItems.push({summary:"No current semester selected", badgecount: 1, badgecolor: bcR });
+				}
+			}
+
 			// Users summary
-			if (vm.users != null) {total=0; vm.allusers.forEach(function(user, index) {total+=1;}); 								
-				vm.siteSummaryItems.push({summary:"Users in the system", badgecount:total,  badgecolor: bcG});}			
+			if (vm.users != null) {
+				tooltip="";tooltip1="";tooltip2="";tooltip3="";tooltip4="";tooltip5="";
+				total=0; total1=0; total2=0; total3=0; total4=0;total5=0;
+				vm.allusers.forEach(function (user, index) {
+					total += 1; // Users in the system
+					if (user.project == null || user.rank == null || user.department == null || user.college == null) {tooltip1+="User: " + user.firstName +" " + user.lastName + "\n"; total1+=1;} 
+					if (user.userType == "Student" && user.semester == null) {tooltip2+="User: " + user.firstName +" " + user.lastName + "\n"; total2+=1;} 
+					if (user.userType == null || user.pantherID == null) {tooltip3+="User: " + user.firstName +" " + user.lastName + "\n"; total3+=1;} 
+					if (!user.piApproval) {tooltip4+="User: " + user.firstName +" " + user.lastName + "\n"; total4+=1;} 
+				});
+				vm.siteSummaryItems.push({summary:"Users in the system", badgecount: total, badgecolor: bcG });
+				vm.siteSummaryItems.push({summary:"Users with no project, rank, department, or college", badgecount:total1,  badgecolor: bcR, tooltip: tooltip1});
+				vm.siteSummaryItems.push({summary:"Students with no semester", badgecount:total2,  badgecolor: bcR, tooltip: tooltip2});
+				vm.siteSummaryItems.push({summary:"Users with no user type or panther ID", badgecount:total3,  badgecolor: bcR, tooltip: tooltip3});
+				vm.siteSummaryItems.push({summary:"Users pending PI approval", badgecount:total4,  badgecolor: bcR, tooltip: tooltip4});
+			}			
 			if (vm.users != null) {total=0; vm.users.forEach(function(user, index) {total+=1;}); 								
 				vm.siteSummaryItems.push({summary:"Users Confirmed (email verified)", badgecount:total,  badgecolor: bcG});}
 			if (vm.users != null) {tooltip="";total=0; vm.unconfirmedusers.forEach(function(user, index) {tooltip+="User: " + user.firstName +" " + user.lastName + "\n"; total+=1;}); 								
 				vm.siteSummaryItems.push({summary:"Users Unconfirmed (email not verified)", badgecount:total,  badgecolor: bcR, tooltip: tooltip});}				
+
 		}
 
 		function emailProductOwners() {
@@ -915,6 +936,8 @@
 				alert("No data to process. Please add a file/course to the list");
 				return;
 			}
+			
+			var studentsAdded = 0, studentsUpdated = 0, studentsRemovedFromCourses  = 0, studentsProcessed = 0;
 
 			// Build map for users for fast lookup
 			var userMap = new Map();
@@ -925,8 +948,9 @@
 			vm.courseFiles.forEach(function (courseFile, indexA) {
 				// Map for users in this course file
 				var courseEnrolled = new Map();
-
+				
 				courseFile.data.forEach(function (courseUser, indexB) {
+					studentsProcessed+=1;
 					courseEnrolled.set(courseUser.email, indexB + 1);
 					// Determine if user exists already
 					if (userMap.get(courseUser.email)) {
@@ -934,15 +958,16 @@
 						var testUser = vm.allusers[userMap.get(courseUser.email)];
 						var needUpdate = false;
 
-						if (testUser.course != courseFile.course.name) {
+						if (testUser.course != courseFile.course.fullName) {							
 							needUpdate = true;
 						}
-						if (testUser.isEnrolled != true) {
+						if (testUser.isEnrolled != true) {							
 							needUpdate = true;
 						}
 
 						// Update the user in the database
 						if (needUpdate) {
+							studentsUpdated+=1;
 							testUser.course = courseFile.course.fullName;
 							testUser.isEnrolled = true;
 							User.update({ user: testUser });
@@ -955,7 +980,7 @@
 						courseUser['piApproval'] = true;
 						courseUser['adminCreated'] = true;
 						courseUser['RegDate'] = DateTimeService.getCurrentDateTimeAsString();
-
+						studentsAdded+=1;
 						User.create(courseUser).then(function (data) {
 							if (data) {
 								if (data.data.success) {
@@ -969,7 +994,7 @@
 						});
 					}
 				});
-
+				
 				// Remove users that are no longer in this specific course
 				vm.allusers.forEach(function (user, index) {
 					if (!courseEnrolled.get(user.email)) {
@@ -978,6 +1003,7 @@
 							user.course = "";
 							user.isEnrolled = false;
 							User.update({ user: user });
+							studentsRemovedFromCourses+=1;
 						}
 					}
 				});
@@ -990,7 +1016,11 @@
 
 			swal({
 				title: "Success",
-				text: "Users database has been updated with the uploaded course file data",
+				text: "Students data updated with the course file" +
+					   "\nRecords processed: " + studentsProcessed +
+					   "\nStudents added: " + studentsAdded +
+					   "\nStudents updated: " + studentsUpdated +
+					   "\nStudents removed from course(s): " + studentsRemovedFromCourses,
 				type: "success",
 				confirmButtonText: "Continue",
 				allowOutsideClick: true,
