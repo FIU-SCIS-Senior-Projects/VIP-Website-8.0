@@ -60,21 +60,28 @@
   </nav>
 
   <div ng-show="showAdminPage">
-
-
     <!-- .................................................... -->
 
     <!-- .................................................... -->
-    <div class="row">
-      <div class="col-md-12 panel panel-default">
-        <h3 align="center"> Unconfirmed Users (For Dev Only)</h3>
-        <div class="form-group">
+      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px; height: 450px;">
+          <!-- Default panel contents -->
+          <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Site Summary </h3></div>
+
+          <!-- List group -->
+          <div class="list-group">              
+            <a title="{{siteSummaryItem.tooltip}}" class="list-group-item" ng-show="{{siteSummaryItem.badgecount}} > 0" ng-repeat="siteSummaryItem in vm.siteSummaryItems" style="padding-bottom: 5px; padding-top: 5px;"><span class="badge" ng-style={{siteSummaryItem.badgecolor}}>{{siteSummaryItem.badgecount}}</span>{{siteSummaryItem.summary}}</a> 
+          </div>
+      </div>
+   
+      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px; height: 450px;">
+        <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Unconfirmed Users</h3></div>        
+        <div class="form-group" style="margin:20px;">
           <table class="table">
             <tr>
-              <input type="text" ng-model="selectUser" placeholder="Search for student" uib-typeahead="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers | filter:{firstName:$viewValue} | limitTo:8"
+              <input type="text" ng-model="selectUser" placeholder="Search for student" uib-typeahead="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.unconfirmedusers | filter:{firstName:$viewValue} | limitTo:8"
                 class="form-control" ng-blur="vm.selectUser(selectUser)">
 
-              <select class="form-control" ng-model="Selecteduserconfirm" ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.filteredusers"
+              <select class="form-control" ng-model="Selecteduserconfirm" ng-options="user as '['+user.userType+'] '+user.firstName + ' ' + user.lastName for user in vm.unconfirmedusers"
                 value="{{vm.userinUnconfirmedfunc(Selecteduserconfirm)}}"></select>
             </tr>
             <tr>
@@ -91,46 +98,11 @@
             </tr>
           </table>
         </div>
-      </div>
-    </div>
-
-    <!-- .................................................... -->
-    <!--Joe's User Story -->
-    <div class="row">
-      <!--
-            This button is to add new terms to the terms collection in Mongo, leave commented out unless you are planning to add a new collection
-            Take Note, this button allows duplicates, so be careful, or you'll have to manually remove duplicate terms from the db
-                    <button  ng-click="vm.AddTerms()">Add Terms</button> -->
-
-
-
-      <!--Dafna's code-->
-
-      <!--<button ng-click="vm.addsetting()"> Add "Settings" Collection </button>-->
-      <!--<table class="table">-->
-      <!--<thead>-->
-      <!--<tr>-->
-      <!--<th>Owner</th>-->
-      <!--<th>Current Index</th>-->
-      <!--<th>Email Options</th>-->
-      <!--<th>ID</th>-->
-      <!--<th> Delete?</th>-->
-      <!--</tr>-->
-      <!--</thead>-->
-
-      <!--<tbody>-->
-      <!--<tr>-->
-      <!--<td>{{vm.adminSettings.owner}}</td>-->
-      <!--<td>{{vm.adminSettings.current_email}}</td>-->
-      <!--<td>{{vm.adminSettings.emails}}</td>-->
-      <!--<td>{{vm.adminSettings._id}}</td>-->
-      <!--<td> <button ng-click="vm.deletesetting(vm.adminSettings)">Delete</button></td>-->
-      <!--</tr>-->
-      <!--</tbody>-->
-      <!--</table>-->
-
-      <div class="col-md-6 panel panel-default">
-        <h3 align="center" style="margin-bottom: 0px">Admin Email</h3>
+      </div>   
+      
+    
+      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px; height: 300px;">  <!-- Admin Email -->       
+        <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Admin Email</h3></div>
         <p align="center">
           <b>{{vm.adminSettings.current_email}}</b>
         </p>
@@ -178,8 +150,9 @@
       </div>
       <!--Dafna's code-->
 
-      <div class="col-md-6 panel panel-default">
-        <h3 align="center">Email Signature</h3>
+      <div class="col-md-6 panel panel-default" style="padding-left: 0px;padding-right: 0px; height: 300px;"> <!-- Email Signature -->
+        <div class="panel-heading"><h3 align="center" style="margin-bottom: 5px; margin-top: 5px;">Email Signature</h3></div>
+        <h3 align="center"></h3>
         <div class="form-group">
           <table class="table">
             <tr>
@@ -199,8 +172,8 @@
             </tr>
           </table>
         </div>
-      </div>
-    </div>
+      </div>  
+     
   </div>
 
   <!-- Course Maintenace Tab ................................................................................................... -->
