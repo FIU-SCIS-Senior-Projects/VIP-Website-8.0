@@ -118,10 +118,18 @@ angular.module('routes', ['ui.router'])
                 url:'/studentConfirmation/:id',
                 resolve:{
                     //function to be resolved, accessFac and $location Injected
-                    "check":function(ProfileService,reviewRegService,$location,$stateParams,$window)
+                    "check":function(ProfileService,reviewRegService,adminService,$location,$stateParams,$window, DateTimeService)
                     {
                         var profile;
                         var profile_check = {};
+                        var projectDeadlineStartDate = null;
+                        var projectDeadlineEndDate = null;                        
+                        
+                        adminService.getAdminSettings().then(function (data)
+                        {
+                            projectDeadlineStartDate = data.projectDeadlineStartDate;
+                            projectDeadlineEndDate = data.projectDeadlineEndDate;
+                        });
 
                         // check if user is allowed to view this page
                         ProfileService.loadProfile().then(function(data)
@@ -130,8 +138,39 @@ angular.module('routes', ['ui.router'])
                             if (data)
                             {
                                 profile = data;
+                                //console.log("data", data);
+                                if (projectDeadlineStartDate != null && projectDeadlineEndDate != null) {
+                                    var dtoday = new Date();
+                                    var dstart = new Date(projectDeadlineStartDate);
+                                    var dend = new Date(projectDeadlineEndDate);
+                                    if  (dtoday.valueOf() <  dstart.valueOf() || dtoday.valueOf() >  dend.valueOf()){
+                                        swal({
+                                            title: "Projects Not Available!",
+                                            text: "Projects are not available to apply at this moment.\n"+
+                                                  "Application Start date: " + dstart.toLocaleDateString() + "\n" + 
+                                                  "Application End date: " + dstart.toLocaleDateString() + "\n",
+                                            type: "info",
+                                            confirmButtonText: "Okay" ,
+                                            allowOutsideClick: false,
+                                            timer: 60000,
+                                        }
+                                        );                                                                            
+                                        $window.location = "/#/";
+                                    }
+                                }
+                                else {
+                                    swal({
+                                        title: "Not Available!",
+                                        text: "The deadline for Students to apply to a project is not set.",
+                                        type: "info",
+                                        confirmButtonText: "Okay" ,
+                                        allowOutsideClick: false,
+                                        timer: 60000,
+                                    }
+                                    );                                   
+                                    $window.location = "/#/";
+                                }
                             }
-
                             // guest user
                             else {
                                 //alert("found guest, redir to login");

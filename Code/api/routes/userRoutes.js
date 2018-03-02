@@ -26,7 +26,7 @@ module.exports = function (app, express) {
       //    )
       function(req,res,next){
          passport.authenticate('google',function(err, user, info){
-            console.log(user)
+            //console.log(user)
              if (err) {
                 return res.redirect('/status');
              }
@@ -36,7 +36,7 @@ module.exports = function (app, express) {
              User.findOne({email: user.email}, function (error, usr) {
                 usr.piApproval = true
                 usr.save(function (err) {
-                   console.log(err)
+                   //console.log(err)
                 });
              })
              req.login(user,function(err){
@@ -281,7 +281,7 @@ module.exports = function (app, express) {
          function (req, res) {
             //console.log('*************** HERE ****************')
             User.findById(req.params.user, function (err, user) {
-               console.log(user)
+               //console.log(user)
                user.piProjectApproval = true
                user.save(function (err) {
                   if (err)
@@ -302,7 +302,7 @@ module.exports = function (app, express) {
             function (req, res) {
                //console.log('*************** HERE ****************')
                User.findById(req.params.user, function (err, user) {
-                  console.log(user)
+                  //console.log(user)
                   user.piApproval = true
                   user.save(function (err) {
                      if (err)
@@ -323,7 +323,7 @@ module.exports = function (app, express) {
                function (req, res) {
                   //console.log('*************** HERE ****************')
                   User.findById(req.params.user, function (err, user) {
-                     console.log(user)
+                     //console.log(user)
                      user.piApproval = false
                      user.save(function (err) {
                         if (err)
@@ -525,7 +525,7 @@ module.exports = function (app, express) {
                                                             course: user.course
                                                         }
 
-                                                        console.log(tempObj)
+                                                        //console.log(tempObj)
                                                         resolve(tempObj)
 
 

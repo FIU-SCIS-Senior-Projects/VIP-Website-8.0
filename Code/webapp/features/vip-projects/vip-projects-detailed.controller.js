@@ -5,10 +5,10 @@
         .module('vip-projects')
         .controller('VIPProjectsDetailedCtrl', VIPProjectsDetailedCtrl);
 
-    VIPProjectsDetailedCtrl.$inject = ['$sce', '$location', '$state', '$scope', '$stateParams', 'ProjectService', 'ProfileService', 'reviewStudentAppService', 'User', '$window'];
+    VIPProjectsDetailedCtrl.$inject = ['$sce', '$location', '$state', '$scope', '$stateParams', 'ProjectService', 'ProfileService', 'reviewStudentAppService', 'User', '$window', 'adminService', 'DateTimeService'];
 
     /* @ngInject */
-    function VIPProjectsDetailedCtrl($sce, $location, $state, $scope, $stateParams, ProjectService, ProfileService, reviewStudentAppService, User, $window) {
+    function VIPProjectsDetailedCtrl($sce, $location, $state, $scope, $stateParams, ProjectService, ProfileService, reviewStudentAppService, User, $window, adminService, DateTimeService) {
         var profile = null;
         var vm = this;
         vm.data = null
@@ -195,21 +195,62 @@
         }
 
 
+
         function leaveProject() {
-            swal({
-                title: "You're about to leave this project!",
-                text: "Are you sure you want to leave this project?",
-                type: "warning",
-                confirmButtonText: "I'm sure",
-                showCancelButton: true,
-            }, function () {
-				// US 1328 - Update Users in project being removed
-                profile.joined_project = false;
-				profile.project = null;
-                User.update({user: profile});
-                reviewStudentAppService.RemoveFromProject(vm.id, profile.email, profile.firstName + " " + profile.lastName);
-                $window.location.reload();
-            });
+            adminService.getAdminSettings().then(function (data)
+            {
+                var projectDeadlineStartDate=null;
+                var projectDeadlineEndDate=null; 
+                projectDeadlineStartDate = data.projectDeadlineStartDate;
+                projectDeadlineEndDate = data.projectDeadlineEndDate;
+
+                if (projectDeadlineStartDate != null && projectDeadlineEndDate != null) {
+                    var dtoday = new Date();
+                    var dstart = new Date(projectDeadlineStartDate);
+                    var dend = new Date(projectDeadlineEndDate);
+                    if  (dtoday.valueOf() <  dstart.valueOf() || dtoday.valueOf() >  dend.valueOf()){
+                        swal({
+                            title: "Projects Not Available!",
+                            text: "Projects are not available to leave at this moment.\n"+
+                                  "Application Start date: " + dstart.toLocaleDateString() + "\n" + 
+                                  "Application End date: " + dstart.toLocaleDateString() + "\n",
+                            type: "info",
+                            confirmButtonText: "Okay" ,
+                            allowOutsideClick: false,
+                            timer: 60000,
+                        }
+                        );
+                        return;
+                    }                    
+                }
+                else {
+                    swal({
+                        title: "Not Available!",
+                        text: "The deadline for Students to apply/leave a project is not set.",
+                        type: "info",
+                        confirmButtonText: "Okay" ,
+                        allowOutsideClick: false,
+                        timer: 60000,
+                    }
+                    );   
+                    return;             
+                }
+    
+                swal({
+                    title: "You're about to leave this project!",
+                    text: "Are you sure you want to leave this project?",
+                    type: "warning",
+                    confirmButtonText: "I'm sure",
+                    showCancelButton: true,
+                }, function () {
+                    // US 1328 - Update Users in project being removed
+                    profile.joined_project = false;
+                    profile.project = null;
+                    User.update({user: profile});
+                    reviewStudentAppService.RemoveFromProject(vm.id, profile.email, profile.firstName + " " + profile.lastName);
+                    $window.location.reload();
+                });
+            });            
         }
 
         function deleteProject() {

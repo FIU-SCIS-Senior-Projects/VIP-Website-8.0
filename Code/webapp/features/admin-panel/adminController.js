@@ -22,6 +22,7 @@
 		$scope.routeSemesterMaintenance = routeSemesterMaintenance
 		$scope.routeAdminMaint = routeAdminMaint
 		$scope.routeCourseMaintenance = routeCourseMaintenance
+
 		vm.currentSwitchStatus;
 		vm.proposableSwitchStatus;
 		vm.viewableSwitchStatus;
@@ -61,8 +62,6 @@
 			$scope.queryp5 = selectedSemester;
 			$scope.queryC3 = selectedSemester;
 		}
-
-
 		function selectedItemChange(item) {
 			$log.info('Item changed to ' + JSON.stringify(item));
 		}
@@ -85,7 +84,7 @@
 			$scope.showSemesterMaint = false;
 			$scope.showProjectMaint = true;
 			$scope.showAdminPage = false;
-			$scope.showCoursePage = false;
+			$scope.showCoursePage = false;			
 		}
 		function routeSemesterMaintenance() {
 			$scope.showUserMaint = false;
@@ -360,6 +359,10 @@
 		};
 
 		vm.changeEmailSignature = function () {
+			vm.savesetting();
+		};
+
+		vm.changeProjectDeadlineDates = function () {
 			vm.savesetting();
 		};
 
@@ -2441,7 +2444,7 @@
 		vm.addemail = AddEmail;
 		vm.addsetting = AddSetting;
 		vm.deletesetting = DeleteSetting;
-		vm.savesetting = SaveSetting;
+		vm.savesetting = SaveSetting;		
 		vm.toggleactive = ToggleActive;
 		vm.loadsettings = loadSettings;
 
@@ -2489,11 +2492,22 @@
 		}
 
 		function SaveSetting() {
+			if (vm.adminSettings.projectDeadlineStartDate == null || vm.adminSettings.projectDeadlineEndDate == null) {
+				savesettings_msg_error();
+				return;
+			}				
 			if (vm.adminSettings.emailSignature) {
 				vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/\n/g, "<br/>");
 			}
-			adminService.saveAdminSettings(vm.adminSettings).then(function (data) {
+			var ed = new Date(vm.adminSettings.projectDeadlineEndDate);
+			ed.setHours(23, 59, 59, 0);			
+			vm.adminSettings.projectDeadlineEndDate = ed;
+			adminService.saveAdminSettings(vm.adminSettings).then(function (data) {				
 				vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/<br\/>/g, "\n");
+				var sd = new Date(vm.adminSettings.projectDeadlineStartDate);
+				vm.adminSettings.projectDeadlineStartDate = sd.toLocaleDateString();
+				var ed = new Date(vm.adminSettings.projectDeadlineEndDate);						
+				vm.adminSettings.projectDeadlineEndDate = ed.toLocaleDateString();
 			});
 			savesettings_msg();
 		}
@@ -2518,9 +2532,13 @@
 				var result = data;
 
 				var getAdminSettings = function () {
-					adminService.getAdminSettings().then(function (data) {
+					adminService.getAdminSettings().then(function (data) {						
 						vm.adminSettings = data;
 						vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/<br\/>/g, "\n");
+						var sd = new Date(vm.adminSettings.projectDeadlineStartDate);
+						vm.adminSettings.projectDeadlineStartDate = sd.toLocaleDateString();
+						var ed = new Date(vm.adminSettings.projectDeadlineEndDate);						
+						vm.adminSettings.projectDeadlineEndDate = ed.toLocaleDateString();
 					});
 				};
 
@@ -3078,9 +3096,22 @@
 
 		function savesettings_msg() {
 			swal({
-				title: "Admin Settings Saved",
-				text: "Admin preferences have been saved!",
+				title: "Settings Saved",
+				text: "Preferences have been saved!",
 				type: "info",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			},
+				function () { }
+			);
+		};
+
+		function savesettings_msg_error() {
+			swal({
+				title: "Settings Error",
+				text: "Incorrect deadline dates format",
+				type: "error",
 				confirmButtonText: "Continue",
 				allowOutsideClick: true,
 				timer: 10000,

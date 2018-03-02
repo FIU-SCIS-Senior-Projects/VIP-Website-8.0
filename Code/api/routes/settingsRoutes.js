@@ -68,6 +68,8 @@ module.exports = function(app, express) {
                 settings.emails = req.body.emails;
                 settings.current_email = req.body.current_email;
                 settings.emailSignature = (req.body.emailSignature) ? req.body.emailSignature : settings.emailSignature;
+                settings.projectDeadlineStartDate = req.body.projectDeadlineStartDate;
+                settings.projectDeadlineEndDate = req.body.projectDeadlineEndDate;
                 settings.save(function(err)
                 {
                     if (err)
