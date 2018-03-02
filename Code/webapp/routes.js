@@ -122,9 +122,8 @@ angular.module('routes', ['ui.router'])
                     {
                         var profile;
                         var profile_check = {};
-                        var projectDeadlineStartDate;
-                        var projectDeadlineEndDate;
-                        
+                        var projectDeadlineStartDate = null;
+                        var projectDeadlineEndDate = null;                        
                         
                         adminService.getAdminSettings().then(function (data)
                         {
