@@ -213,7 +213,7 @@
                             title: "Projects Not Available!",
                             text: "Projects are not available to leave at this moment.\n"+
                                   "Application Start date: " + dstart.toLocaleDateString() + "\n" + 
-                                  "Application End date: " + dstart.toLocaleDateString() + "\n",
+                                  "Application End date: " + dend.toLocaleDateString() + "\n",
                             type: "info",
                             confirmButtonText: "Okay" ,
                             allowOutsideClick: false,
