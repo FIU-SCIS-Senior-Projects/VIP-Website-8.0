@@ -20,7 +20,12 @@ var sendEmail = function (recipient, text, subject, errorHandler, successHandler
                 errorHandler(error);
             }
         } else if (successHandler) {
-            successHandler(info.response);
+            try {
+                successHandler(info.response);
+            }
+            catch (err) {
+                console.log("Error successHandler(info.response) : ", err);
+            }
         }
     });
 };
@@ -50,7 +55,7 @@ exports.sendEmailWithHeaderAndSignatureNoUser = function (recipient, mainText, s
     User.findOne({ email: recipient }, function(error, user) {
         if (error || !user) {
             console.log("Failed to find user " + recipient + " to send an email to.\n" + ((error) ? error.toString() : ""));
-            //sendEmailWithHeaderAndSignature({ email: recipient }, mainText, subject, errorHandler, successHandler);
+            sendEmailWithHeaderAndSignature({ email: recipient }, mainText, subject, errorHandler, successHandler);
         } else {
             sendEmailWithHeaderAndSignature(user, mainText, subject, errorHandler, successHandler);
         }
