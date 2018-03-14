@@ -360,7 +360,7 @@ a {
 
 .project-info {
     margin: 10px 10px 20px 10px;
-    height: 425px;
+    height: 445px;
     width: 48%;
     padding: 10px;
     border: 1px solid #C2C2C2;
@@ -382,10 +382,6 @@ a {
 
 .metadata-icon {
     font-size: 10px; 
-}
-
-.detailed-project-info {
-
 }
 
 .proj-info-box {
@@ -411,8 +407,8 @@ a {
     }
 
     .project-info {
-        margin: 10px auto;
-        height: 260px;
+        margin: auto;
+        height: auto;
         width: 100%;
     }
 
@@ -545,7 +541,7 @@ a {
 .thumb-card-container {
     text-align: center;
     margin: auto;
-    height: 85px;
+    height: auto;
     overflow-y: hidden;
     overflow-x: scroll;
     white-space:nowrap;
@@ -556,6 +552,7 @@ a {
     font-size: 0.8em;
 }
 
+/* not used anywhere*/
 .proj-image {
     padding: 0px 10px 10px 10px; 
     max-height: 135px; 
@@ -566,8 +563,8 @@ a {
 }
 
 .proj-image-container {
-    height: 135px;
-    width: 135px;
+    height: 100px;
+    width: 100px;
     float:left;
     display: inline;
     line-height: 135px;
@@ -576,9 +573,11 @@ a {
 
 .proj-image-container img {
     padding: 0px 10px 10px 10px; 
-    max-height: 135px; 
-    max-width:135px;
+    max-height: 100px; 
+    max-width:100px;
     vertical-align: middle;
+    width: auto;
+    height: auto;
 }
 
 .buttons-container {
@@ -602,6 +601,10 @@ a {
 .proj-descrip-teams {
     font-family: calibri, sans-serif;
     font-size: 14.5px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    height: auto; 
 }
 
 .outer-wrapper {
