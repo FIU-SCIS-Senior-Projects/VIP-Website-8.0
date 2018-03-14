@@ -1938,26 +1938,28 @@
                   </tr>
                   <tr>
                     <td>
-                      <button id="addPUserButton" type="button" class="btn btn-primary" ng-click="vm.addStudentProject()">
+                      <button id="addPUserButton" type="button" title="Add User to Project" class="btn btn-primary" ng-click="vm.addStudentProject()">
                         <i class="fa fa-user-plus" aria-hidden="true"></i>
                       </button>
                     </td>
                     <td>
-                      <select id="addPUser" class="form-control" ng-model="addPUser" ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.allusers | filter: {userType: 'Student'} | filter: studentQuery? studentQuery:'' | filter: vm.editingProject.semester? {semester: vm.editingProject.semester}:'' ">
+                      <select id="addPUser" class="form-control" ng-model="addPUser" ng-options="user as user.firstName + ' ' + user.lastName + ', ' + user.email for user in vm.usersWOProject | filter: {userType: 'Student'} | filter: studentQuery? studentQuery:'' | filter: vm.editingProject.semester? {semester: vm.editingProject.semester}:'' ">
                         <option value=""></option>
                       </select>
                     </td>
                   </tr>
                   <tr ng-repeat="student in vm.editingProject.members_detailed_copy">
                     <td>
-                      <button id="removePUserButton" class="btn btn-danger" ng-click="vm.removeStudentProject(student.name)">
+                      <button id="removePUserButton" class="btn btn-danger" title="Remove User" ng-click="vm.removeStudentProject(student.name)">
                         <i class="fa fa-user-times" aria-hidden="true"></i>
                       </button>
-                      <button ng-model="approveStud" class="btn btn-primary" ng-click="vm.approveStudentProject(student.id)" ng-disabled="student.approved">
+                      <button ng-model="approveStud" class="btn btn-primary" title="Enroll User in Project" ng-click="vm.approveStudentProject(student.id)" ng-disabled="student.approved">
                         <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
                       </button>
                     </td>
-                    <td>{{student.name}}</td>
+                    <td>{{student.name}}
+                      <span ng-show="!student.approved" style="color:red"> <b>(Pending approval)</b></span>
+                    </td>
                   </tr>
                 </table>
               </div>
@@ -1988,7 +1990,7 @@
                   </tr>
                   <tr>
                     <td>
-                      <button id="addPFacultyButton" type="button" class="btn btn-primary" ng-click="vm.addFacultyProject()">
+                      <button id="addPFacultyButton" type="button" title="Add Faculty to Project" class="btn btn-primary" ng-click="vm.addFacultyProject()">
                         <i class="fa fa-user-plus" aria-hidden="true"></i>
                       </button>
                     </td>
@@ -2000,7 +2002,7 @@
                   </tr>
                   <tr ng-repeat="faculty in vm.editingProject.faculty">
                     <td>
-                      <button id="removePFacultyButton" class="btn btn-danger" ng-click="vm.removeFacultyProject(faculty)">
+                      <button id="removePFacultyButton" class="btn btn-danger" title="Remove user" ng-click="vm.removeFacultyProject(faculty)">
                         <i class="fa fa-user-times" aria-hidden="true"></i>
                       </button>
                     </td>
@@ -2023,7 +2025,7 @@
                   </tr>
                   <tr>
                     <td>
-                      <button id="addPMentorButton" type="button" class="btn btn-primary" ng-click="vm.addMentorProject()">
+                      <button id="addPMentorButton" type="button" title="Add Mentor to Project" class="btn btn-primary" ng-click="vm.addMentorProject()">
                         <i class="fa fa-user-plus" aria-hidden="true"></i>
                       </button>
                     </td>
@@ -2035,7 +2037,7 @@
                   </tr>
                   <tr ng-repeat="mentor in vm.editingProject.mentor">
                     <td>
-                      <button id="removePMentorButton" class="btn btn-danger" ng-click="vm.removeMentorProject(mentor)">
+                      <button id="removePMentorButton" class="btn btn-danger" title="Remove Mentor" ng-click="vm.removeMentorProject(mentor)">
                         <i class="fa fa-user-times" aria-hidden="true"></i>
                       </button>
                     </td>

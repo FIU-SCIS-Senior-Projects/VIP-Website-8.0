@@ -2271,6 +2271,7 @@
 					vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 					vm.tabledata_p = eval(vm.tabledata_p);
 				}
+				loadUsers();
 			});
 		};
 
@@ -2553,12 +2554,17 @@
 		}
 
 		//Load all user information
+		vm.usersWOProject;
 		function loadUsers() {
 			var tempArray = [];
 			var tempArray2 = [];
 			adminService.loadAllUsers().then(function (data) {
 				vm.allusers = data;
+				vm.usersWOProject = [];//array of users without projects
 				vm.allusers.forEach(function (obj) {
+					if (!obj.project && obj.userType =='Student') {
+						vm.usersWOProject.push(obj);//pushes users without projects to the array
+					}
 					tempArray2.push(obj);
 					if (obj.verifiedEmail == false) {
 						tempArray2.pop();
