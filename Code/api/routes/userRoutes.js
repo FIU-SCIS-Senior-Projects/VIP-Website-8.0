@@ -14,37 +14,37 @@ module.exports = function (app, express) {
     //Google+ Authentication
     app.get('/auth/google',
         authProvider.authorizeAll,
-        passport.authenticate('google', {scope: ['profile', 'email']}));
+        passport.authenticate('google', { scope: ['profile', 'email'] }));
 
     app.get('/auth/google/callback',
         authProvider.authorizeAll,
-      //   passport.authenticate('google',
-      //       {
-      //           successRedirect: '/#',
-      //           failureRedirect: '/status'
-      //       }
-      //    )
-      function(req,res,next){
-         passport.authenticate('google',function(err, user, info){
-            //console.log(user)
-             if (err) {
-                return res.redirect('/status');
-             }
-             if (!user) {
-                return res.redirect('/status');
-             }
-             User.findOne({email: user.email}, function (error, usr) {
-                usr.piApproval = true
-                usr.save(function (err) {
-                   //console.log(err)
-                });
-             })
-             req.login(user,function(err){
-                if (err) { return next(err); }
-                return res.redirect('/#');
-             })
-           })(req, res, next)
-      }
+        //   passport.authenticate('google',
+        //       {
+        //           successRedirect: '/#',
+        //           failureRedirect: '/status'
+        //       }
+        //    )
+        function (req, res, next) {
+            passport.authenticate('google', function (err, user, info) {
+                //console.log(user)
+                if (err) {
+                    return res.redirect('/status');
+                }
+                if (!user) {
+                    return res.redirect('/status');
+                }
+                User.findOne({ email: user.email }, function (error, usr) {
+                    usr.piApproval = true
+                    usr.save(function (err) {
+                        //console.log(err)
+                    });
+                })
+                req.login(user, function (err) {
+                    if (err) { return next(err); }
+                    return res.redirect('/#');
+                })
+            })(req, res, next)
+        }
 
     );
 
@@ -79,7 +79,7 @@ module.exports = function (app, express) {
             if (!req.user || req.user.userType !== 'Pi/CoPi') {//if not logged in yet or logged in but not PI, proceed with regular authentication as usual
                 return next();
             } else {
-                User.findOne({email: req.body.email}, function (error, user) {//impersonate this user
+                User.findOne({ email: req.body.email }, function (error, user) {//impersonate this user
                     if (error) {
                         return next(error);
                     } else if (user.userType === 'Pi/CoPi') {
@@ -91,13 +91,13 @@ module.exports = function (app, express) {
                             if (error) {
                                 return next(error);
                             } else {
-                                ImpersonationLog.update({ adminEmail: adminEmail},
-                                    {adminEmail: adminEmail, impersonatedEmail: user.email,"connect.sid": req.cookies["connect.sid"], time: new Date()},
-                                    {upsert: true}, function(err, raw) {
+                                ImpersonationLog.update({ adminEmail: adminEmail },
+                                    { adminEmail: adminEmail, impersonatedEmail: user.email, "connect.sid": req.cookies["connect.sid"], time: new Date() },
+                                    { upsert: true }, function (err, raw) {
                                         if (err) {
                                             console.log("There was an error when saving the impersonation log for user: " + req.user.email);
                                         }
-                                        res.send({redirectUrl: "/#", error: null})
+                                        res.send({ redirectUrl: "/#", error: null })
                                     });
                             }
                         });
@@ -115,21 +115,21 @@ module.exports = function (app, express) {
     // FOR LOGOUT IMPLEMENTATION
     app.get('/logout',
         authProvider.authorizeAll,
-        function(req, res, next) {//for getting out of impersonation
+        function (req, res, next) {//for getting out of impersonation
             if (!req.user) {
                 return next();
             } else if (req.user.userType === 'Pi/CoPi') {//Pi's can't be impersonated
                 return next();
             } else {
-                ImpersonationLog.findOne({'connect.sid': req.cookies["connect.sid"]}, function(err, log) {
+                ImpersonationLog.findOne({ 'connect.sid': req.cookies["connect.sid"] }, function (err, log) {
                     if (err || !log || log.impersonatedEmail !== req.user.email) {
                         return next();//just logout the user
                     }
-                    ImpersonationLog.remove({adminEmail: log.adminEmail}, function(err, result) {
-                        if (err) {}//not sure this is a meaningful problem
+                    ImpersonationLog.remove({ adminEmail: log.adminEmail }, function (err, result) {
+                        if (err) { }//not sure this is a meaningful problem
                     });
                     if (new Date().getTime() - log.time.getTime() < (1000 * 60 * 60 * 72)) {//don't allow if older than 3 days
-                        User.findOne({email: log.adminEmail}, function (err, user) {
+                        User.findOne({ email: log.adminEmail }, function (err, user) {
                             if (err || !user) {//just logout the user
                                 return next();
                             }
@@ -159,8 +159,8 @@ module.exports = function (app, express) {
     userRouter.route('/notifications/opt-out/:user_id')
         .get(
             authProvider.authorizeAll,//i figured there is not reason why this should be secured
-            function(req, res) {
-                User.update({_id: req.params.user_id}, { allowNotifications: false }, function(err, raw) {
+            function (req, res) {
+                User.update({ _id: req.params.user_id }, { allowNotifications: false }, function (err, raw) {
                     if (err) {
                         console.log("Failed to disable notifications for user with id '" + req.params.user_id + "'.\n" +
                             "Because of '" + err.toString() + "'.");
@@ -174,7 +174,7 @@ module.exports = function (app, express) {
     userRouter.route('/verifyEmail/:user_id')
         .get(
             authProvider.authorizeAll,
-            function (req, res) {
+            function (req, res) {                
                 User.findById(req.params.user_id, function (err, user) {
                     if (user === null) {
                         res.json('Invalid link. Email cannot be verified.');
@@ -212,15 +212,15 @@ module.exports = function (app, express) {
                 var bccget = req.body.bcc;
 
                 recipient.split(',').concat(!bccget ? [] : bccget.split(',')).forEach(function (email) {
-                    emailService.sendEmailWithHeaderAndSignatureNoUser(email, text, subject, function(err){}, function(success){return res.send(success)} );
+                    emailService.sendEmailWithHeaderAndSignatureNoUser(email, text, subject, function (err) { }, function (success) { return res.send(success) });
                 });
-                
-                if(req.body.recipient2) {
-                  var recipient2 = req.body.recipient2;
-                  var text2 = req.body.text2;
-                  var subject2 = req.body.subject2;
 
-                  emailService.sendEmailWithHeaderAndSignatureNoUser(recipient2, text2, subject2, function(err){}, function(success){return res.send(success)} );
+                if (req.body.recipient2) {
+                    var recipient2 = req.body.recipient2;
+                    var text2 = req.body.text2;
+                    var subject2 = req.body.subject2;
+
+                    emailService.sendEmailWithHeaderAndSignatureNoUser(recipient2, text2, subject2, function (err) { }, function (success) { return res.send(success) });
                 }
             });
 
@@ -228,7 +228,7 @@ module.exports = function (app, express) {
         .get(
             authProvider.authorizeAll,
             function (req, res) {
-                User.findOne({email: req.params.email}, function (err, user) {
+                User.findOne({ email: req.params.email }, function (err, user) {
                     if (err) {
                     } else {
                         if (user) {
@@ -243,17 +243,17 @@ module.exports = function (app, express) {
             authProvider.authorizeByUserType(authProvider.userType.PiCoPi,
                 authProvider.authorizeByUserId('params.id')),
             function (req, res) {
-                User.remove({_id: req.params.id}, function (err, user) {
+                User.remove({ _id: req.params.id }, function (err, user) {
                     if (err)
                         return res.send(err);
-                    res.json({message: 'successfully deleted!'});
+                    res.json({ message: 'successfully deleted!' });
                 });
             })
         .get(
             authProvider.authorizeByUserType(authProvider.userType.PiCoPi,
                 authProvider.authorizeByUserId('params.id')),
             function (req, res) {
-                User.findOne({_id: req.params.id}, function (err, user) {
+                User.findOne({ _id: req.params.id }, function (err, user) {
                     if (err) {
                     } else if (user) {
                         return res.json(user);
@@ -262,82 +262,82 @@ module.exports = function (app, express) {
             });
 
 
-	// Find User by Term
-	userRouter.route('/users/term/:term')
+    // Find User by Term
+    userRouter.route('/users/term/:term')
         .get(
             authProvider.authorizeByUserType(authProvider.userType.PiCoPi),
             function (req, res) {
-                User.find({semester: req.params.term}, function (err, users) {
+                User.find({ semester: req.params.term }, function (err, users) {
                     if (err) {
-						return res.send(err);
+                        return res.send(err);
                     } else if (users) {
                         return res.json(users);
                     }
                 });
             });
-   userRouter.route('/usersUpdate/approveProject/:user')
-      .put(
-         authProvider.authorizeAll,
-         function (req, res) {
-            //console.log('*************** HERE ****************')
-            User.findById(req.params.user, function (err, user) {
-               //console.log(user)
-               user.piProjectApproval = true
-               user.save(function (err) {
-                  if (err)
-                     return res.send({success: false, error: err});
-                  else
-                     res.json({
-                        success: true,
-                        objectId: user._id,
-                        message: 'User account updated.'
-                     });
-               });
-            })
-         }
-      )
-      userRouter.route('/usersUpdate/approveUser/:user')
-         .put(
+    userRouter.route('/usersUpdate/approveProject/:user')
+        .put(
             authProvider.authorizeAll,
             function (req, res) {
-               //console.log('*************** HERE ****************')
-               User.findById(req.params.user, function (err, user) {
-                  //console.log(user)
-                  user.piApproval = true
-                  user.save(function (err) {
-                     if (err)
-                        return res.send({success: false, error: err});
-                     else
-                        res.json({
-                           success: true,
-                           objectId: user._id,
-                           message: 'User account updated.'
-                        });
-                  });
-               })
-            }
-         )
-      userRouter.route('/usersUpdate/unapproveUser/:user')
-            .put(
-               authProvider.authorizeAll,
-               function (req, res) {
-                  //console.log('*************** HERE ****************')
-                  User.findById(req.params.user, function (err, user) {
-                     //console.log(user)
-                     user.piApproval = false
-                     user.save(function (err) {
+                //console.log('*************** HERE ****************')
+                User.findById(req.params.user, function (err, user) {
+                    //console.log(user)
+                    user.piProjectApproval = true
+                    user.save(function (err) {
                         if (err)
-                           return res.send({success: false, error: err});
+                            return res.send({ success: false, error: err });
                         else
-                           res.json({
-                              success: true,
-                              objectId: user._id,
-                              message: 'User account updated.'
-                           });
-                     });
-                  })
-               }
-            )
+                            res.json({
+                                success: true,
+                                objectId: user._id,
+                                message: 'User account updated.'
+                            });
+                    });
+                })
+            }
+        )
+    userRouter.route('/usersUpdate/approveUser/:user')
+        .put(
+            authProvider.authorizeAll,
+            function (req, res) {
+                //console.log('*************** HERE ****************')
+                User.findById(req.params.user, function (err, user) {
+                    //console.log(user)
+                    user.piApproval = true
+                    user.save(function (err) {
+                        if (err)
+                            return res.send({ success: false, error: err });
+                        else
+                            res.json({
+                                success: true,
+                                objectId: user._id,
+                                message: 'User account updated.'
+                            });
+                    });
+                })
+            }
+        )
+    userRouter.route('/usersUpdate/unapproveUser/:user')
+        .put(
+            authProvider.authorizeAll,
+            function (req, res) {
+                //console.log('*************** HERE ****************')
+                User.findById(req.params.user, function (err, user) {
+                    //console.log(user)
+                    user.piApproval = false
+                    user.save(function (err) {
+                        if (err)
+                            return res.send({ success: false, error: err });
+                        else
+                            res.json({
+                                success: true,
+                                objectId: user._id,
+                                message: 'User account updated.'
+                            });
+                    });
+                })
+            }
+        )
 
     // User.create(vm.userData).success(function(data) from userRegistrationController.js calls this function
     // BUG: This function is returning success even if the user already exists in the database
@@ -360,37 +360,37 @@ module.exports = function (app, express) {
                 user.RegDate = req.body.RegDate;  // sets the users college
                 user.allowNotifications = true;//new users opt in to notifications by default
                 user.piProjectApproval = false;
-				user.googleKey = " ";
+                user.googleKey = " ";
                 user.userType = req.body.userType;
                 user.gender = req.body.gender;
-				user.semester = req.body.semester;
-				user.course = req.body.course;
-				user.isEnrolled = req.body.isEnrolled;
+                user.semester = req.body.semester;
+                user.course = req.body.course;
+                user.isEnrolled = req.body.isEnrolled;
 
-				// Called only when user is created by admin panel (us #1300)
-				if (req.body.adminCreated) {
-					user.piApproval = req.body.piApproval;
-					if (typeof user.piApproval === 'boolean' && user.piApproval) {
-						user.piDenial = false;
-						user.verifiedEmail = true;
-						user.isDecisionMade = true;
-					}
-					else if (typeof user.piApproval === 'boolean' && !user.piApproval) {
-						user.piDenial = true;
-						user.verifiedEmail = false;
-						user.isDecisionMade = true;
-					}
-					else {
-						user.piDenial = false;
-						user.verifiedEmail = false;
-						user.isDecisionMade = false;
-					}
+                // Called only when user is created by admin panel (us #1300)
+                if (req.body.adminCreated) {
+                    user.piApproval = req.body.piApproval;
+                    if (typeof user.piApproval === 'boolean' && user.piApproval) {
+                        user.piDenial = false;
+                        user.verifiedEmail = true;
+                        user.isDecisionMade = true;
+                    }
+                    else if (typeof user.piApproval === 'boolean' && !user.piApproval) {
+                        user.piDenial = true;
+                        user.verifiedEmail = false;
+                        user.isDecisionMade = true;
+                    }
+                    else {
+                        user.piDenial = false;
+                        user.verifiedEmail = false;
+                        user.isDecisionMade = false;
+                    }
 
-					if (user.userType == "Pi/CoPi")
-						user.isSuperUser = true;
-					else
-						user.isSuperUser = false;
-				}
+                    if (user.userType == "Pi/CoPi")
+                        user.isSuperUser = true;
+                    else
+                        user.isSuperUser = false;
+                }
                 // mohsen says his and masouds accounts should automatically become verified as Pi
                 else if (req.body.email == "mtahe006@fiu.edu" || req.body.email == "sadjadi@cs.fiu.edu") {
                     // give them all perms
@@ -400,7 +400,7 @@ module.exports = function (app, express) {
                     user.isDecisionMade = true;
                     user.isSuperUser = true;
                 }
-				else {
+                else {
                     // initially has to be init to false
                     user.piApproval = false;
                     user.piDenial = false;
@@ -416,14 +416,14 @@ module.exports = function (app, express) {
                     if (err) {
                         // duplicate entry - user exists
                         if (err.code == 11000)
-                            return res.json({success: false, message: 'A user already exists.'});//todo: error code?
+                            return res.json({ success: false, message: 'A user already exists.' });//todo: error code?
                         else
-                            return res.send({success: false, error: err});//todo: error code?
+                            return res.send({ success: false, error: err });//todo: error code?
                     }
                     // return the object and object id for validation and message for the client
                     res.json({
                         success: true,
-						object: newUser,
+                        object: newUser,
                         objectId: user._id,
                         message: 'User account created please verify the account via the registered email.'
                     });
@@ -439,116 +439,115 @@ module.exports = function (app, express) {
                         user.pantherID = req.body.user.pantherID;     // set the users panther ID
                         user.password = req.body.user.password;  // set the users password (comes from the request)
                         user.passwordConf = req.body.user.passwordConf;
-						user.gender = req.body.user.gender;
+                        user.gender = req.body.user.gender;
                         user.email = req.body.user.email;   // sets the users email
                         user.project = req.body.user.project; // sets the users project
-						user.userType = req.body.user.userType;
+                        user.userType = req.body.user.userType;
                         user.rank = req.body.user.rank;    // set the users Rank within the program
                         user.college = req.body.user.college;   // sets the users college
                         user.department = req.body.user.department;  // sets the users college
                         user.joined_project = req.body.user.joined_project;
-						user.semester = req.body.user.semester;
-						user.piApproval = req.body.user.piApproval;
-						user.course = req.body.user.course;
-						user.isEnrolled = req.body.user.isEnrolled;
-            user.piProjectApproval = false;
+                        user.semester = req.body.user.semester;
+                        user.piApproval = req.body.user.piApproval;
+                        user.course = req.body.user.course;
+                        user.isEnrolled = req.body.user.isEnrolled;
+                        user.piProjectApproval = false;
 
-						if (typeof user.piApproval === 'boolean' && user.piApproval) {
-							user.piDenial = false;
-							user.verifiedEmail = true;
-							user.isDecisionMade = true;
-						}
-						else if (typeof user.piApproval === 'boolean' && !user.piApproval) {
-							user.piDenial = true;
-							user.verifiedEmail = false;
-							user.isDecisionMade = true;
-						}
-						else {
-							user.piDenial = false;
-							user.verifiedEmail = false;
-							user.isDecisionMade = false;
-						}
+                        if (typeof user.piApproval === 'boolean' && user.piApproval) {
+                            user.piDenial = false;
+                            user.verifiedEmail = true;
+                            user.isDecisionMade = true;
+                        }
+                        else if (typeof user.piApproval === 'boolean' && !user.piApproval) {
+                            user.piDenial = true;
+                            user.verifiedEmail = false;
+                            user.isDecisionMade = true;
+                        }
+                        else {
+                            user.piDenial = false;
+                            user.verifiedEmail = false;
+                            user.isDecisionMade = false;
+                        }
 
-						if (user.userType == "Pi/CoPi")
-							user.isSuperUser = true;
-						else
-							user.isSuperUser = false;
+                        if (user.userType == "Pi/CoPi")
+                            user.isSuperUser = true;
+                        else
+                            user.isSuperUser = false;
 
                         user.save(function (err) {
                             if (err)
-								return res.send({success: false, error: err});
-							else
-								res.json({
-									success: true,
-									objectId: user._id,
-									message: 'User account updated.'
-								});
+                                return res.send({ success: false, error: err });
+                            else
+                                res.json({
+                                    success: true,
+                                    objectId: user._id,
+                                    message: 'User account updated.'
+                                });
                         });
                     }
                 });
             });
 
 
-             //User story 1356 - API endpoint for consumption by Mobile Judge
-             userRouter.route('/api/getAll/:token')
-             .get(authProvider.authorizeAll,
-
-                 function(req, res) {
-                     //simple token authentication - see config
-                     if(Key.key === req.params.token) {
+    //User story 1356 - API endpoint for consumption by Mobile Judge
+    userRouter.route('/api/getAll/:token')
+        .get(authProvider.authorizeAll,
+            function (req, res) {                
+                console.log("Key.key === req.params.token", (Key.key === req.params.token));
+                //simple token authentication - see config
+                if (Key.key === req.params.token) {
                     //get the enrolled list
                     User.find({ isEnrolled: true, course: { $ne: null } },
-                    'email pantherID firstName lastName project course',
-                                function(err, users) {
-                                    if (err) {
-                                        return res.send(err);
-                                    } else if (users) {
-                                        var userPromises = [];
-                                        users.map(function(user){
-                                            userPromises.push(  new Promise(function(resolve, reject){
-                                                Project.findOne({ title: user.project }, function(err, proj){
+                        'email pantherID firstName lastName project course',
+                        function (err, users) {
+                            console.log("err, users", err, users);
+                            if (err) {
+                                return res.send(err);
+                            } else if (users) {
+                                var userPromises = [];
+                                users.map(function (user) {
+                                    userPromises.push(new Promise(function (resolve, reject) {
+                                        Project.findOne({ title: user.project }, function (err, proj) {
+                                            console.log("err, proj", err, proj);
+                                            if (err) {
+                                                reject('')
+                                            }
 
-                                                    if(err){
-                                                        reject('')
-                                                    }
+                                            //map to custom object for MJ
+                                            var tempObj = {
+                                                email: user.email,
+                                                id: user.pantherID,
+                                                firstName: user.firstName,
+                                                lastName: user.lastName,
+                                                middle: null,
+                                                valid: true,
+                                                projectTitle: user.project,
+                                                projectId: proj ? proj._id : null,
+                                                course: user.course
+                                            }
 
-                                                        //map to custom object for MJ
-                                                        var tempObj = {
-                                                            email : user.email,
-                                                            id : user.pantherID,
-                                                            firstName: user.firstName,
-                                                            lastName: user.lastName,
-                                                            middle: null,
-                                                            valid: true,
-                                                            projectTitle: user.project,
-                                                            projectId:  proj ? proj._id : null,
-                                                            course: user.course
-                                                        }
-
-                                                        //console.log(tempObj)
-                                                        resolve(tempObj)
-
-
-
-                                                })
-                                            })
-                                         )
+                                            //console.log(tempObj)
+                                            resolve(tempObj)
+                                        })
                                     })
-                                    //async wait and set
-                                    Promise.all(userPromises).then(function(results){
-                                        res.json(results)
-                                    }).catch(function(err){
-                                        res.send(err)
-                                    })
-                                }
-                            })
+                                    )
+                                })
+                                //async wait and set
+                                Promise.all(userPromises).then(function (results) {
+                                    res.json(results)
+                                }).catch(function (err) {
+                                    res.send(err)
+                                })
+                            }
+                        })
 
 
 
-                    } else {
-                        return  res.json( {msg: "Token not authorized, please see your admin"})
-                    }
-                 });
+                } else {
+                    return res.json({ msg: "Token not authorized, please see your admin" })
+                }
+            });
 
+    
     return userRouter;
 };
