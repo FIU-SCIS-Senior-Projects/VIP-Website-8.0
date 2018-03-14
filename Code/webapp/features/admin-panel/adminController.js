@@ -169,6 +169,10 @@
 		vm.semesterToBeDeleted;
 		vm.emailSemester;
 
+		vm.printFriendlyView = false;
+        vm.printFriendlyViewButtonText1 = "LIST VIEW";        
+        vm.printFriendlyViewfunc = printFriendlyViewfunc;
+
 		//Out of scope functions
 		vm.userTypeChange = userTypeChange;
 		vm.userChange = userChange;
@@ -227,6 +231,15 @@
 		vm.ses = function (semester) {
 			vm.emailSemester = semester.name;
 		}
+		function printFriendlyViewfunc () {
+			vm.printFriendlyView = !vm.printFriendlyView;
+			if (!vm.printFriendlyView) {
+				vm.printFriendlyViewButtonText1 = "LIST VIEW";				
+			}
+			else  {
+				vm.printFriendlyViewButtonText1 = "TABLE VIEW";				
+			}
+		}
 
 		vm.siteSummaryItems;		
 		vm.buildSiteSummary = function () {	
@@ -267,13 +280,15 @@
 				vm.allusers.forEach(function (user, index) {
 					total += 1; // Users in the system
 					if (user.project == null || user.rank == null || user.department == null || user.college == null) {tooltip1+="User: " + user.firstName +" " + user.lastName + "\n"; total1+=1;} 
-					if (user.userType == "Student" && user.semester == null) {tooltip2+="User: " + user.firstName +" " + user.lastName + "\n"; total2+=1;} 
+					if (user.userType == "Student" && (user.semester == null || user.semester != vm.defaultSemester )) {tooltip2+="User: " + user.firstName +" " + user.lastName + "\n"; total2+=1;} 
 					if (user.userType == null || user.pantherID == null) {tooltip3+="User: " + user.firstName +" " + user.lastName + "\n"; total3+=1;} 
 					if (!user.piApproval) {tooltip4+="User: " + user.firstName +" " + user.lastName + "\n"; total4+=1;} 
+					if (user.userType == "Student" && user.course == null) {tooltip5+="User: " + user.firstName +" " + user.lastName + "\n"; total5+=1;} 
 				});
 				vm.siteSummaryItems.push({summary:"Users in the system", badgecount: total, badgecolor: bcG });
 				vm.siteSummaryItems.push({summary:"Users with no project, rank, department, or college", badgecount:total1,  badgecolor: bcR, tooltip: tooltip1});
-				vm.siteSummaryItems.push({summary:"Students with no semester", badgecount:total2,  badgecolor: bcR, tooltip: tooltip2});
+				vm.siteSummaryItems.push({summary:"Students with no semester or not in default semester", badgecount:total2,  badgecolor: bcR, tooltip: tooltip2});
+				vm.siteSummaryItems.push({summary:"Students in no course", badgecount:total5,  badgecolor: bcR, tooltip: tooltip5});
 				vm.siteSummaryItems.push({summary:"Users with no user type or panther ID", badgecount:total3,  badgecolor: bcR, tooltip: tooltip3});
 				vm.siteSummaryItems.push({summary:"Users pending PI approval", badgecount:total4,  badgecolor: bcR, tooltip: tooltip4});
 			}			

@@ -240,6 +240,12 @@ a {
 
 .inline {white-space: nowrap;}
 
+.list-inline {
+    padding-left: 0;
+    margin-left: 0px;
+    list-style: none;
+}
+
 /*.loginIcon{
 	float:right;
 	font-size: 1.9em;
@@ -325,12 +331,12 @@ a {
 
 .projects-top-bar {
     margin-bottom: 1.5em;
-    padding: 3em;
+    padding: 10px;
     border-bottom: solid 1px #d7d7d7;
     font-family: "Helvetica Neue", Arial, Helvetica, "Trebuchet MS", sans-serif;
     font-size: 87.5%;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .projects-top-bar h1 {
@@ -589,6 +595,28 @@ a {
     line-height: 1.5em;
     font-family: calibri, sans-serif;
 }
+
+#collapseModule {
+    width: 100%;
+  }
+  
+  #collapseModule p.collapse[aria-expanded="false"] {
+      display: block;
+      height: 40px !important;
+      overflow: hidden;      
+  }
+  
+  #modulcollapseModulee p.collapsing[aria-expanded="false"] {
+      height: 40px !important;      
+  }
+  
+  #collapseModule a.collapsed:after  {
+      content: '+ Show More';
+  }
+  
+  #collapseModule a:not(.collapsed):after {
+      content: '- Show Less';
+  }
 
 /* The class is old - Not used anymore */
 .proj-descrip-teams-vid {

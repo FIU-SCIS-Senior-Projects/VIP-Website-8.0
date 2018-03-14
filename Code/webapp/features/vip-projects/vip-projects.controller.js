@@ -5,9 +5,9 @@
         .module('vip-projects')
         .controller('VIPProjectsCtrl', VIPProjectsCtrl);
 
-    VIPProjectsCtrl.$inject = ['$sce', '$state', '$scope', 'ProjectService'];
+    VIPProjectsCtrl.$inject = ['$sce', '$state', '$scope', 'ProjectService', 'adminService', 'DateTimeService'];
     /* @ngInject */
-    function VIPProjectsCtrl($sce, $state, $scope, ProjectService) {
+    function VIPProjectsCtrl($sce, $state, $scope, ProjectService, adminService, DateTimeService) {
         //Variable Declarations
         var vm = this;
         var projectsArray = [];
@@ -18,7 +18,11 @@
         vm.temProj = new Set();
         vm.filteringVariables = new Set();
         vm.showAllCheckBox = true;
-		vm.done = false;
+        vm.done = false;
+        vm.printFriendlyView = false;
+        vm.printFriendlyViewButtonText1 = "PROJECTS/TEAMS";
+        vm.printFriendlyViewButtonText2 = "final lineup";
+        vm.printFriendlyViewfunc = printFriendlyViewfunc;
         //Function Declarations
         vm.showAllDisciplinesToggle = showAllDisciplinesToggle; 
         vm.filterByDiscipline = filterByDiscipline;
@@ -150,6 +154,58 @@
         
         function viewDetails (data) {
             $state.go('projectsDetailed',{id: data._id});
+        }
+
+        function printFriendlyViewfunc () {
+            adminService.getAdminSettings().then(function (data) {
+                if (!vm.printFriendlyView) {
+                    var projectDeadlineStartDate = null;
+                    var projectDeadlineEndDate = null;
+                    projectDeadlineStartDate = data.projectDeadlineStartDate;
+                    projectDeadlineEndDate = data.projectDeadlineEndDate;
+
+                    if (projectDeadlineStartDate != null && projectDeadlineEndDate != null) {
+                        var dtoday = new Date();
+                        var dstart = new Date(projectDeadlineStartDate);
+                        var dend = new Date(projectDeadlineEndDate);
+                        if (dtoday.valueOf() < dend.valueOf()) {
+                            swal({
+                                title: "Not Available!",
+                                text: "Project teams are only available after deadline end date.\n" +
+                                    "Application Start date: " + dstart.toLocaleDateString() + "\n" +
+                                    "Application End date: " + dend.toLocaleDateString() + "\n",
+                                type: "info",
+                                confirmButtonText: "Okay",
+                                allowOutsideClick: false,
+                                timer: 60000,
+                            }
+                            );
+                            return;
+                        }
+                    }
+                    else {
+                        swal({
+                            title: "Not Available!",
+                            text: "The deadline for Students to apply/leave a project is not set.",
+                            type: "info",
+                            confirmButtonText: "Okay",
+                            allowOutsideClick: false,
+                            timer: 60000,
+                        }
+                        );
+                        return;
+                    }
+                }
+                vm.printFriendlyView = !vm.printFriendlyView;
+                if (!vm.printFriendlyView) {
+                    vm.printFriendlyViewButtonText1 = "PROJECTS/TEAMS";
+                    vm.printFriendlyViewButtonText2 = "final lineup";   
+                }
+                else  {
+                    vm.printFriendlyViewButtonText1 = "PROJECTS CARD VIEW";
+                    vm.printFriendlyViewButtonText2 = "(go back)";
+                }
+            });
         }
         
         function bubbleSort(a, par)

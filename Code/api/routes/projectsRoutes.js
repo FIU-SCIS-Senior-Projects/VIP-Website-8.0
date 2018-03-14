@@ -200,7 +200,7 @@ module.exports = function (app, express) {
                     }
 
                     if (req.body.image) {
-                        console.log("new image : " + req.body.image);
+                        //console.log("new image : " + req.body.image);
                         proj.image = req.body.image;
                     }
 
