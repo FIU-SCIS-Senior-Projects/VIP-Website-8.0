@@ -62,6 +62,10 @@
 			$scope.queryp5 = selectedSemester;
 			$scope.queryC3 = selectedSemester;
 		}
+
+		$scope.semesterFilter = function (myUser) { 		
+			return (myUser.semester === $scope.query14 && myUser.userType === 'Student') || (myUser.userType !== 'Student');			
+		};
 		function selectedItemChange(item) {
 			$log.info('Item changed to ' + JSON.stringify(item));
 		}
