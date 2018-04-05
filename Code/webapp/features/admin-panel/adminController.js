@@ -1256,6 +1256,7 @@
 				college: findIndexCollege(vm.editingUser.college),
 				userType: findIndexUserType(vm.editingUser.userType),
 				approval: findIndexApproval(vm.editingUser.piApproval),
+				emailVerification: findIndexApproval(vm.editingUser.verifiedEmail),
 				project: findIndexProject(vm.editingUser.project),
 				term: findIndexTerm(vm.editingUser.semester),
 				course: findIndexCourse(vm.editingUser.course)
@@ -1293,6 +1294,11 @@
 				$scope.editUserPIApproval = vm.booleanOptions[indexes.approval];
 			else
 				document.getElementById("ddPIApproval").selectedIndex = -1;
+			//User story #1419
+			if (indexes.approval != -1)
+				$scope.editUserVerifyEmail = vm.booleanOptions[indexes.emailVerification];
+			else
+				document.getElementById("ddVerifyEmail").selectedIndex = -1;
 			if (indexes.project != -1)
 				$scope.editUserProject = vm.allprojects[indexes.project];
 			else
@@ -1488,6 +1494,11 @@
 						vm.editingUser.piApproval = $scope.editUserPIApproval.type;
 					else
 						vm.editingUser.piApproval = null;
+					//User story #1419
+					if ($scope.editUserVerifyEmail)
+						vm.editingUser.verifiedEmail = $scope.editUserVerifyEmail.type;
+					else
+						vm.editingUser.verifiedEmail = null;
 					if ($scope.editUserCollege)
 						vm.editingUser.college = $scope.editUserCollege.name;
 					else
@@ -2884,7 +2895,16 @@
 			vm.userinunconfirmed = user;
 		}
 
+		function verifyEmail(){
+			if (vm.userinunconfirmed){
+				user.verifiedEmail = true;
+				vm.message = "User email has been verified!";
 
+				reviewRegService.acceptProfile(user).then(function (data) {
+				});
+				confirm_msg();
+			}
+		}
 
 		//Confirm unconfirmed users
 		function ConfirmUser() {

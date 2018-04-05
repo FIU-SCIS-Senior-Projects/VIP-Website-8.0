@@ -448,7 +448,7 @@ module.exports = function (app, express) {
                         user.department = req.body.user.department;  // sets the users college
                         user.joined_project = req.body.user.joined_project;
                         user.semester = req.body.user.semester;
-                        user.piApproval = req.body.user.piApproval;
+                        user.piApproval = req.body.user.piApproval;                        
                         user.course = req.body.user.course;
                         user.isEnrolled = req.body.user.isEnrolled;
                         user.piProjectApproval = false;
@@ -468,6 +468,7 @@ module.exports = function (app, express) {
                             user.verifiedEmail = false;
                             user.isDecisionMade = false;
                         }
+                        user.verifiedEmail = req.body.user.verifiedEmail;
 
                         if (user.userType == "Pi/CoPi")
                             user.isSuperUser = true;
