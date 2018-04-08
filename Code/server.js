@@ -73,6 +73,7 @@ var logRoutes = require('./api/routes/logRoutes')(app,express);
 var settingsRoutes = require('./api/routes/settingsRoutes')(app,express);
 var skillsRoutes = require('./api/routes/skillsRoutes')(app, express);
 
+var courseFileRoutes = require('./api/routes/courseFileRoutes')(app, express);
 var termRoutes = require('./api/routes/termRoutes')(app, express);
 var courseRoutes = require('./api/routes/courseRoutes')(app, express);
 
@@ -86,6 +87,7 @@ app.use('/log', logRoutes);
 app.use('/settings', settingsRoutes);
 app.use('/api', skillsRoutes);
 
+app.use('/api', courseFileRoutes);
 app.use('/api', termRoutes);
 app.use('/api', courseRoutes);
 

@@ -624,6 +624,18 @@
 			}
 		};
 		document.getElementById('courseFileInput').addEventListener('change', handleFile, false);
+		
+		vm.getCourseFilesFromServer = function() {
+			vm.clearCourseFiles();
+			var courseFiles = adminService.getCourseFiles().then(function(data) {				
+				data.forEach(function(file) {
+					vm.addCourseData = parseTXT(file.content);
+					vm.addCourseFileName = file.fileName;
+					matchOrCreateCourse(vm.addCourseFileName);
+					vm.addCourseFile()
+				})
+			});
+		}
 
 		// Updates the course select box with best fit course given the file name
 		function matchOrCreateCourse(file) {
@@ -641,7 +653,7 @@
 				document.getElementById('syncCourseSelect').selectedIndex = -1;
 				// Hide add course table
 				$scope.showAddCourse = false;
-				$scope.$digest();
+				//$scope.$digest();
 
 				//console.log("courseMatch:", file, file.match(/[A-Z]{3}\s+[0-9]{4}\s+-\s+[A-Z0-9]+\s+([0-9]+)/));
 				// Try to match a segment of the file name with a course from a current semester
@@ -741,21 +753,25 @@
 					}
 				}
 			}
-			catch (err) { /* Don't try match with filename that cannot be parsed */ }
+			catch (err) {  console.log(err) }
 		};
 
 		// Adds a course file to course file list
 		vm.addCourseFile = function () {
-			if ($scope.syncCourseSelect && document.getElementById('courseFileInput').value) {
+			if ($scope.syncCourseSelect && vm.addCourseFileName) {
 				// test if duplicate exists in courseFiles list
 				var courseName = $scope.syncCourseSelect.fullName;
 				var found = false;
+				var fileWithSameCourseName = '';
 
 				vm.courseFiles.forEach(function (courseFile) {
-					if (courseFile.course.fullName == courseName)
+					if (courseFile.course.fullName == courseName){
 						found = true;
+						fileWithSameCourseName = courseFile.file;
+					}
 				});
-				if (!found) {
+				if (!found || ((fileWithSameCourseName.match('.*-.*-.*-INC\.txt') && vm.addCourseFileName.match('.*-.*-.*\.txt')) ||
+				fileWithSameCourseName.match('.*-.*-.*\.txt') && vm.addCourseFileName.match('.*-.*-.*-INC\.txt'))) {
 					// Test whether file data was successfully pulled from TXT file
 					if (vm.addCourseData != null) {
 						// Create the new courseFile and add it to the list
@@ -769,7 +785,6 @@
 						// Clear Data and UI
 						$scope.syncCourseSelect = "";
 						document.getElementById('syncCourseSelect').selectedIndex = -1;
-						document.getElementById('courseFileInput').value = null;
 						vm.addCourseFileName = null;
 						vm.addCourseData = null;
 						// Hide add course table
@@ -779,7 +794,6 @@
 						// Clear Data and UI
 						$scope.syncCourseSelect = "";
 						document.getElementById('syncCourseSelect').selectedIndex = -1;
-						document.getElementById('courseFileInput').value = null;
 						vm.addCourseFileName = null;
 						vm.addCourseData = null;
 						// Hide add course table
@@ -795,7 +809,7 @@
 						}, function () { }
 						);
 					}
-				}
+				}				
 				else {
 					swal({
 						title: "Error",
@@ -921,7 +935,10 @@
 				var userLoginName = rowArr[0].toLowerCase();
 				var fullName = rowArr[2];
 				var email = userLoginName + "@fiu.edu";
-				var lastNameFirst4 = userLoginName.slice(1, 5);
+				console.log(userLoginName.match('\\d+'));
+				var lastNameFirst4 = userLoginName.slice(1, userLoginName.match('\\d+').index);
+				console.log(fullName);
+				console.log(lastNameFirst4);
 				if (fullName.toLowerCase().indexOf(lastNameFirst4) == -1) {
 					alert("Incorrect file format: Student name does not match login user name structure. Row: " + (i + 1));
 					return null;
