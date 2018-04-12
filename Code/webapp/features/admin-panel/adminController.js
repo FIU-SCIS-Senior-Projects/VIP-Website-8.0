@@ -614,7 +614,7 @@
 				var files = e.target.files, fileSource = files[0];
 				var reader = new FileReader();
 				reader.onload = function (e) {
-					vm.addCourseData = parseTXT(e.target.result);
+					vm.addCourseData = parseTXT(e.target.result, document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, ''));
 				};
 				reader.readAsText(fileSource);
 
@@ -629,7 +629,7 @@
 			vm.clearCourseFiles();
 			var courseFiles = adminService.getCourseFiles().then(function(data) {				
 				data.forEach(function(file) {
-					vm.addCourseData = parseTXT(file.content);
+					vm.addCourseData = parseTXT(file.content, file.fileName);
 					vm.addCourseFileName = file.fileName;
 					matchOrCreateCourse(vm.addCourseFileName);
 					vm.addCourseFile()
@@ -911,7 +911,7 @@
 		};
 
 		// Parse TXT file into readable data
-		function parseTXT(file) {
+		function parseTXT(file, fileName) {
 			var entries = file.split("\n"); // Splits at the end of line. entries has the rows now
 
 			if (entries[entries.length - 1] == null || entries[entries.length - 1] == "") {
@@ -940,7 +940,7 @@
 				console.log(fullName);
 				console.log(lastNameFirst4);
 				if (fullName.toLowerCase().indexOf(lastNameFirst4) == -1) {
-					alert("Incorrect file format: Student name does not match login user name structure. Row: " + (i + 1));
+					alert("Incorrect file format: On file: " + fileName + " Student name does not match login user name structure.On Row: " + (i + 1));
 					return null;
 				}
 				var firstAndMidName = fullName.slice(0, fullName.toLowerCase().indexOf(lastNameFirst4) - 1);
@@ -1000,6 +1000,9 @@
 						if (testUser.course != courseFile.course.fullName) {							
 							needUpdate = true;
 						}
+						if (testUser.pantherID != courseUser.pantherID) {							
+							needUpdate = true;
+						}
 						if (testUser.isEnrolled != true) {							
 							needUpdate = true;
 						}
@@ -1008,6 +1011,7 @@
 						if (needUpdate) {
 							studentsUpdated+=1;
 							testUser.course = courseFile.course.fullName;
+							testUser.pantherID = courseUser.pantherID;
 							testUser.isEnrolled = true;
 							User.update({ user: testUser });
 						}
