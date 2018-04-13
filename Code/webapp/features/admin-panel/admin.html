@@ -647,11 +647,7 @@
                 <th ng-click="orderByFieldApp='email'; reverseSortApp = !reverseSortApp">Email
                   <span ng-show="orderByFieldApp == 'email' && !reverseSortApp" class="fa fa-caret-down"></span>
                   <span ng-show="orderByFieldApp == 'email' && reverseSortApp" class="fa fa-caret-up"></span>
-                </th>              
-                <th ng-click="orderByFieldApp='userType'; reverseSortApp = !reverseSortApp">User Type
-                  <span ng-show="orderByFieldApp == 'userType' && !reverseSortApp" class="fa fa-caret-down"></span>
-                  <span ng-show="orderByFieldApp == 'userType' && reverseSortApp" class="fa fa-caret-up"></span>
-                </th>
+                </th> 
                 <th ng-click="orderByFieldApp='semester'; reverseSortApp = !reverseSortApp">Semester
                   <span ng-show="orderByFieldApp == 'semester' && !reverseSortApp" class="fa fa-caret-down"></span>
                   <span ng-show="orderByFieldApp == 'semester' && reverseSortApp" class="fa fa-caret-up"></span>
@@ -671,13 +667,7 @@
                 </th>
                 <th>
                   <input type="text" class="form-control" ng-model="query3" />
-                </th>
-                <th>
-                    <select class="form-control" id="susertype" ng-model="selectedusertype" ng-options="typerank as typerank.name for typerank in vm.typeranks"
-                    value="{{vm.getRank(selectedusertype)}}">
-                    <option value=""></option>
-                  </select>
-                </th>               
+                </th>                            
                 <th ng-show="simple">
                   <input type="text" class="form-control" ng-model="query6" />
                 </th>                           
@@ -763,8 +753,7 @@
                 </td>
                 <td>{{user.firstName}}</td>
                 <td>{{user.lastName}}</td>
-                <td>{{user.email}}</td>               
-                <td>{{user.userType}}</td>
+                <td>{{user.email}}</td>                    
                 <td ng-show="simple">{{user.college}}</td>          
                 <td class="center" ng-show="simple">{{user.gender}}</td>
                 <td ng-show="simple">{{user.joined_project}}</td>
