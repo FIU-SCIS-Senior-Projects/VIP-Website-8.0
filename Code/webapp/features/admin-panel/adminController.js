@@ -625,6 +625,7 @@
 		};
 		document.getElementById('courseFileInput').addEventListener('change', handleFile, false);
 		
+		//Adds files retrieved from the server 
 		vm.getCourseFilesFromServer = function() {
 			vm.clearCourseFiles();
 			var courseFiles = adminService.getCourseFiles().then(function(data) {				
