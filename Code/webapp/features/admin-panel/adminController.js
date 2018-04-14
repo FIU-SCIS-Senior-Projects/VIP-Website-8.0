@@ -940,18 +940,30 @@
 				var lastNameFirst4 = userLoginName.slice(1, userLoginName.match('\\d+').index);
 				console.log(fullName);
 				console.log(lastNameFirst4);
-				if (fullName.toLowerCase().indexOf(lastNameFirst4) == -1) {
+				
+				var nameParts = fullName.split(" ");
+				var current = "";
+				var index = -1;
+				
+				for (var j= nameParts.length - 1; j > 0; j--){	
+					current = (nameParts[j].toLowerCase() + " " + current).trim();				
+					index = current.replace(" ", "").indexOf(lastNameFirst4);
+					if(index != -1){
+						break;
+					}
+				};
+				if (index == -1) {
 					alert("Incorrect file format: On file: " + fileName + " Student name does not match login user name structure.On Row: " + (i + 1));
 					return null;
 				}
-				var firstAndMidName = fullName.slice(0, fullName.toLowerCase().indexOf(lastNameFirst4) - 1);
-				var lastName = fullName.slice(fullName.toLowerCase().indexOf(lastNameFirst4), fullName.length);
+				var firstAndMidName = fullName.slice(0, fullName.toLowerCase().indexOf(current) - 1);
+				var lastName = fullName.slice(fullName.toLowerCase().indexOf(current), fullName.length);
 
 				var newUser = {
 					pantherID: pID,
 					email: email,
-					firstName: firstAndMidName,
-					lastName: lastName,
+					firstName: capitalizeFirstLetter(firstAndMidName),
+					lastName: capitalizeFirstLetter(lastName),
 					userType: "Student"
 				};
 
@@ -960,6 +972,14 @@
 			console.log('users', users);
 			return users;
 		};
+
+		function capitalizeFirstLetter(strings) {
+			var result = "";
+			strings.split(" ").forEach(function (string){
+				result = result + " " + string.charAt(0).toUpperCase() + string.slice(1);
+			});	
+			return result.trim();		
+		}
 
 		// Removes a course file from course file list
 		vm.removeCourseFile = function (removingCourseFile) {
