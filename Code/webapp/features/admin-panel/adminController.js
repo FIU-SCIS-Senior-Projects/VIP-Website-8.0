@@ -614,7 +614,7 @@
 				var files = e.target.files, fileSource = files[0];
 				var reader = new FileReader();
 				reader.onload = function (e) {
-					vm.addCourseData = parseTXT(e.target.result);
+					vm.addCourseData = parseTXT(e.target.result, document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, ''));
 				};
 				reader.readAsText(fileSource);
 
@@ -624,6 +624,19 @@
 			}
 		};
 		document.getElementById('courseFileInput').addEventListener('change', handleFile, false);
+		
+		//Adds files retrieved from the server 
+		vm.getCourseFilesFromServer = function() {
+			vm.clearCourseFiles();
+			var courseFiles = adminService.getCourseFiles().then(function(data) {				
+				data.forEach(function(file) {
+					vm.addCourseData = parseTXT(file.content, file.fileName);
+					vm.addCourseFileName = file.fileName;
+					matchOrCreateCourse(vm.addCourseFileName);
+					vm.addCourseFile()
+				})
+			});
+		}
 
 		// Updates the course select box with best fit course given the file name
 		function matchOrCreateCourse(file) {
@@ -641,7 +654,7 @@
 				document.getElementById('syncCourseSelect').selectedIndex = -1;
 				// Hide add course table
 				$scope.showAddCourse = false;
-				$scope.$digest();
+				//$scope.$digest();
 
 				//console.log("courseMatch:", file, file.match(/[A-Z]{3}\s+[0-9]{4}\s+-\s+[A-Z0-9]+\s+([0-9]+)/));
 				// Try to match a segment of the file name with a course from a current semester
@@ -741,21 +754,25 @@
 					}
 				}
 			}
-			catch (err) { /* Don't try match with filename that cannot be parsed */ }
+			catch (err) {  console.log(err) }
 		};
 
 		// Adds a course file to course file list
 		vm.addCourseFile = function () {
-			if ($scope.syncCourseSelect && document.getElementById('courseFileInput').value) {
+			if ($scope.syncCourseSelect && vm.addCourseFileName) {
 				// test if duplicate exists in courseFiles list
 				var courseName = $scope.syncCourseSelect.fullName;
 				var found = false;
+				var fileWithSameCourseName = '';
 
 				vm.courseFiles.forEach(function (courseFile) {
-					if (courseFile.course.fullName == courseName)
+					if (courseFile.course.fullName == courseName){
 						found = true;
+						fileWithSameCourseName = courseFile.file;
+					}
 				});
-				if (!found) {
+				if (!found || ((fileWithSameCourseName.match('.*-.*-.*-INC\.txt') && vm.addCourseFileName.match('.*-.*-.*\.txt')) ||
+				fileWithSameCourseName.match('.*-.*-.*\.txt') && vm.addCourseFileName.match('.*-.*-.*-INC\.txt'))) {
 					// Test whether file data was successfully pulled from TXT file
 					if (vm.addCourseData != null) {
 						// Create the new courseFile and add it to the list
@@ -769,7 +786,6 @@
 						// Clear Data and UI
 						$scope.syncCourseSelect = "";
 						document.getElementById('syncCourseSelect').selectedIndex = -1;
-						document.getElementById('courseFileInput').value = null;
 						vm.addCourseFileName = null;
 						vm.addCourseData = null;
 						// Hide add course table
@@ -779,7 +795,6 @@
 						// Clear Data and UI
 						$scope.syncCourseSelect = "";
 						document.getElementById('syncCourseSelect').selectedIndex = -1;
-						document.getElementById('courseFileInput').value = null;
 						vm.addCourseFileName = null;
 						vm.addCourseData = null;
 						// Hide add course table
@@ -795,7 +810,7 @@
 						}, function () { }
 						);
 					}
-				}
+				}				
 				else {
 					swal({
 						title: "Error",
@@ -897,7 +912,7 @@
 		};
 
 		// Parse TXT file into readable data
-		function parseTXT(file) {
+		function parseTXT(file, fileName) {
 			var entries = file.split("\n"); // Splits at the end of line. entries has the rows now
 
 			if (entries[entries.length - 1] == null || entries[entries.length - 1] == "") {
@@ -921,19 +936,34 @@
 				var userLoginName = rowArr[0].toLowerCase();
 				var fullName = rowArr[2];
 				var email = userLoginName + "@fiu.edu";
-				var lastNameFirst4 = userLoginName.slice(1, 5);
-				if (fullName.toLowerCase().indexOf(lastNameFirst4) == -1) {
-					alert("Incorrect file format: Student name does not match login user name structure. Row: " + (i + 1));
+				console.log(userLoginName.match('\\d+'));
+				var lastNameFirst4 = userLoginName.slice(1, userLoginName.match('\\d+').index);
+				console.log(fullName);
+				console.log(lastNameFirst4);
+				
+				var nameParts = fullName.split(" ");
+				var current = "";
+				var index = -1;
+				
+				for (var j= nameParts.length - 1; j > 0; j--){	
+					current = (nameParts[j].toLowerCase() + " " + current).trim();				
+					index = current.replace(" ", "").indexOf(lastNameFirst4);
+					if(index != -1){
+						break;
+					}
+				};
+				if (index == -1) {
+					alert("Incorrect file format: On file: " + fileName + " Student name does not match login user name structure.On Row: " + (i + 1));
 					return null;
 				}
-				var firstAndMidName = fullName.slice(0, fullName.toLowerCase().indexOf(lastNameFirst4) - 1);
-				var lastName = fullName.slice(fullName.toLowerCase().indexOf(lastNameFirst4), fullName.length);
+				var firstAndMidName = fullName.slice(0, fullName.toLowerCase().indexOf(current) - 1);
+				var lastName = fullName.slice(fullName.toLowerCase().indexOf(current), fullName.length);
 
 				var newUser = {
 					pantherID: pID,
 					email: email,
-					firstName: firstAndMidName,
-					lastName: lastName,
+					firstName: capitalizeFirstLetter(firstAndMidName),
+					lastName: capitalizeFirstLetter(lastName),
 					userType: "Student"
 				};
 
@@ -942,6 +972,14 @@
 			console.log('users', users);
 			return users;
 		};
+
+		function capitalizeFirstLetter(strings) {
+			var result = "";
+			strings.split(" ").forEach(function (string){
+				result = result + " " + string.charAt(0).toUpperCase() + string.slice(1);
+			});	
+			return result.trim();		
+		}
 
 		// Removes a course file from course file list
 		vm.removeCourseFile = function (removingCourseFile) {
@@ -983,6 +1021,9 @@
 						if (testUser.course != courseFile.course.fullName) {							
 							needUpdate = true;
 						}
+						if (testUser.pantherID != courseUser.pantherID) {							
+							needUpdate = true;
+						}
 						if (testUser.isEnrolled != true) {							
 							needUpdate = true;
 						}
@@ -991,6 +1032,7 @@
 						if (needUpdate) {
 							studentsUpdated+=1;
 							testUser.course = courseFile.course.fullName;
+							testUser.pantherID = courseUser.pantherID;
 							testUser.isEnrolled = true;
 							User.update({ user: testUser });
 						}

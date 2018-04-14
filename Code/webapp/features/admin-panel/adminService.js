@@ -111,6 +111,11 @@
           console.log(res)
        })
     }
+    adminFactory.getCourseFiles = function(){
+        return $http.get('/api/courseFiles').then((res)=>{
+            return res.data;
+        })
+    }
         return adminFactory;
     }
 
