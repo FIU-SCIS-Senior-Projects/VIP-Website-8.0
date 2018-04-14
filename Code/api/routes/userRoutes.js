@@ -469,6 +469,7 @@ module.exports = function (app, express) {
                             user.isDecisionMade = false;
                         }
                         user.verifiedEmail = req.body.user.verifiedEmail;
+                        user.isEnrolled = req.body.user.isEnrolled;
 
                         if (user.userType == "Pi/CoPi")
                             user.isSuperUser = true;
@@ -498,7 +499,7 @@ module.exports = function (app, express) {
                 //simple token authentication - see config
                 if (Key.key === req.params.token) {
                     //get the enrolled list
-                    User.find({ isEnrolled: true, course: { $ne: null } },
+                    User.find({ isEnrolled: true, course: { $ne: null }, project: { $ne: null }},
                         'email pantherID firstName lastName project course',
                         function (err, users) {
                             console.log("err, users", err, users);

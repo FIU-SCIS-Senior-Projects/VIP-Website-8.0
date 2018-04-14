@@ -930,7 +930,7 @@
                   <option value=""></option>
                   </select>
                 </div>
-                <div class="col-sm-5">
+                <div class="col-sm-6">
                   <label>College</label>
                   <select class="form-control" ng-model="editUserCollege" id="ddCollege" ng-options="college as college.name for college in vm.colleges">
                     <option value=""></option>
@@ -965,16 +965,22 @@
                 </div>
               </div>
               <div class="form-group">
-                <div class="col-sm-8">
+                <div class="col-sm-6">
                   <label>Project</label>
                   <select class="form-control" ng-model="editUserProject" id="ddProject" ng-options="projects as projects.title for projects in vm.allprojects | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserCourse? {semester: editUserCourse.semester}:'' ">
                     <option value=""></option>
                   </select>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                   <label>Course</label>
                   <select class="form-control" ng-model="editUserCourse" id="ddCourse" ng-options="course as course.fullName for course in vm.courses | filter: editUserTerm? {semester: editUserTerm.name}:'' | filter: editUserProject? {semester: editUserProject.semester}:'' ">
                     <option value=""></option>
+                  </select>
+                </div>                
+                <div class="col-sm-3">                
+                  <label>Enrolled:</label>                
+                  <select class="form-control" ng-model="editUserisEnrolled" id="ddisEnrolled" ng-options="isEnrolled.type for isEnrolled in vm.booleanOptions">
+                  <option value=""></option>
                   </select>
                 </div>
               </div>

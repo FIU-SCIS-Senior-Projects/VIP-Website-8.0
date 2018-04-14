@@ -1303,6 +1303,7 @@
 				userType: findIndexUserType(vm.editingUser.userType),
 				approval: findIndexApproval(vm.editingUser.piApproval),
 				emailVerification: findIndexApproval(vm.editingUser.verifiedEmail),
+				enrolled: findIndexApproval(vm.editingUser.isEnrolled),
 				project: findIndexProject(vm.editingUser.project),
 				term: findIndexTerm(vm.editingUser.semester),
 				course: findIndexCourse(vm.editingUser.course)
@@ -1345,6 +1346,12 @@
 				$scope.editUserVerifyEmail = vm.booleanOptions[indexes.emailVerification];
 			else
 				document.getElementById("ddVerifyEmail").selectedIndex = -1;
+
+			if (indexes.approval != -1)
+				$scope.editUserisEnrolled = vm.booleanOptions[indexes.enrolled];
+			else
+				document.getElementById("ddisEnrolled").selectedIndex = -1;				
+
 			if (indexes.project != -1)
 				$scope.editUserProject = vm.allprojects[indexes.project];
 			else
@@ -1545,6 +1552,12 @@
 						vm.editingUser.verifiedEmail = $scope.editUserVerifyEmail.type;
 					else
 						vm.editingUser.verifiedEmail = null;
+
+					if ($scope.editUserisEnrolled)
+						vm.editingUser.isEnrolled = $scope.editUserisEnrolled.type;
+					else
+						vm.editingUser.verifiedEmail = null;		
+
 					if ($scope.editUserCollege)
 						vm.editingUser.college = $scope.editUserCollege.name;
 					else
@@ -2951,7 +2964,7 @@
 				confirm_msg();
 			}
 		}
-
+		
 		//Confirm unconfirmed users
 		function ConfirmUser() {
 			if (vm.userinunconfirmed) {
