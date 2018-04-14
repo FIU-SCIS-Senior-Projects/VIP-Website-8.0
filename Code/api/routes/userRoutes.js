@@ -499,7 +499,7 @@ module.exports = function (app, express) {
                 //simple token authentication - see config
                 if (Key.key === req.params.token) {
                     //get the enrolled list
-                    User.find({ isEnrolled: true, course: { $ne: null }, project: { $ne: null }},
+                    User.find({ isEnrolled: true, course: { $ne: null }},
                         'email pantherID firstName lastName project course',
                         function (err, users) {
                             console.log("err, users", err, users);
