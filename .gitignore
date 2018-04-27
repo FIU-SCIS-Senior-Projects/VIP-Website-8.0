@@ -6,4 +6,9 @@ Code/webapp/distrib/*
 Code/.idea/**/*
 Code/.jshintrc
 
+Code/package.json
+Code/package-lock.json
+Code/deployment/package.json
+Code/deployment/package-lock.json
+
 .DS_Store

@@ -510,27 +510,50 @@
                                     }, function (error) {
 
                                     });
-                                    //todo for Pi - snaku001
-                                    var todo1 = {
-                                        owner: "Pi/CoPi",
-                                        todo: profile.firstName + ", has applied for " + project.title + ". Please approve or reject his application",
-                                        type: "student",
-                                        link: "/#/reviewuser"
-                                    };
-                                    ToDoService.createTodo(todo1).then(function (success) {
-
-                                    }, function (error) {
-                                    });
-
-                                    var email_msg =
-                                        {
-                                            recipient: profile.email,
-                                            text: "Thank you for applying to \"" + project.title + "\"! Your application is currently pending and this is just a confirmation that you applied to the project please keep checking the VIP to-do or your email as the PI will approve or deny your request to join the project.<br/><br/>Project: " + project.title + "<br/>Status: Pending",
-                                            subject: "Project Application Submission Pending",
-                                            recipient2: vm.adminEmail,
-                                            text2: profile.firstName + " " + profile.lastName + " has applied to project " + project.title + ". Please approve him/her by going to " + LocationService.vipWebUrls.reviewUser,
-                                            subject2: "New Student Applied Has Applied To " + project.title
+                                    
+                                    if (profile.course) { // if user is in an imported course or in a course already then no need for approval from Pi                                    
+                                        /*var todo1 = {
+                                            owner: "Pi/CoPi",
+                                            todo: profile.firstName + ", has applied for " + project.title,
+                                            type: "student",
+                                            link: "/#/reviewuser"
                                         };
+                                        ToDoService.createTodo(todo1).then(function (success) {
+                                        }, function (error) {
+                                        });*/
+
+                                        var email_msg =
+                                            {
+                                                recipient: profile.email,
+                                                text: "Thank you for applying to \"" + project.title + "\"! You have until the end of the deadline to change your mind about this project. Once the deadline has passed you will have access to the final lineup of projects.<br/><br/>Project: " + project.title + "<br/>Status: Pre-Approved",
+                                                subject: "Project Application Submitted",
+                                                recipient2: vm.adminEmail,
+                                                text2: profile.firstName + " " + profile.lastName + " has applied to project " + project.title + ". He/She has been pre-approved by the system since he/she is in a course  (" + profile.course + ")",
+                                                subject2: "New Student Applied To " + project.title
+                                            };
+                                    }
+                                    else {
+                                        var todo1 = {
+                                            owner: "Pi/CoPi",
+                                            todo: profile.firstName + ", has applied for " + project.title + ". Please approve or reject his application",
+                                            type: "student",
+                                            link: "/#/reviewuser"
+                                        };
+                                        ToDoService.createTodo(todo1).then(function (success) {
+
+                                        }, function (error) {
+                                        });
+
+                                        var email_msg =
+                                            {
+                                                recipient: profile.email,
+                                                text: "Thank you for applying to \"" + project.title + "\"! Your application is currently pending and this is just a confirmation that you applied to the project please keep checking the VIP to-do or your email as the PI will approve or deny your request to join the project.<br/><br/>Project: " + project.title + "<br/>Status: Pending",
+                                                subject: "Project Application Submission Pending",
+                                                recipient2: vm.adminEmail,
+                                                text2: profile.firstName + " " + profile.lastName + " has applied to project " + project.title + ". Please approve him/her by going to " + LocationService.vipWebUrls.reviewUser,
+                                                subject2: "New Student Applied To " + project.title
+                                            };
+                                    }    
                                     User.nodeEmail(email_msg);
 
                                     // // refresh the page after 3 seconds so the user can see the message

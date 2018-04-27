@@ -240,6 +240,12 @@ a {
 
 .inline {white-space: nowrap;}
 
+.list-inline {
+    padding-left: 0;
+    margin-left: 0px;
+    list-style: none;
+}
+
 /*.loginIcon{
 	float:right;
 	font-size: 1.9em;
@@ -248,7 +254,7 @@ a {
 
 .login {
 	max-width: 500px;
-	min-width: 400px;
+	min-width: 300px;
 	margin: 12px auto;
 }
 .login .login-form {
@@ -325,12 +331,12 @@ a {
 
 .projects-top-bar {
     margin-bottom: 1.5em;
-    padding: 3em;
+    padding: 10px;
     border-bottom: solid 1px #d7d7d7;
     font-family: "Helvetica Neue", Arial, Helvetica, "Trebuchet MS", sans-serif;
     font-size: 87.5%;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .projects-top-bar h1 {
@@ -360,7 +366,7 @@ a {
 
 .project-info {
     margin: 10px 10px 20px 10px;
-    height: 425px;
+    height: 445px;
     width: 48%;
     padding: 10px;
     border: 1px solid #C2C2C2;
@@ -382,10 +388,6 @@ a {
 
 .metadata-icon {
     font-size: 10px; 
-}
-
-.detailed-project-info {
-
 }
 
 .proj-info-box {
@@ -411,8 +413,8 @@ a {
     }
 
     .project-info {
-        margin: 10px auto;
-        height: 260px;
+        margin: auto;
+        height: auto;
         width: 100%;
     }
 
@@ -545,7 +547,7 @@ a {
 .thumb-card-container {
     text-align: center;
     margin: auto;
-    height: 85px;
+    height: auto;
     overflow-y: hidden;
     overflow-x: scroll;
     white-space:nowrap;
@@ -556,6 +558,7 @@ a {
     font-size: 0.8em;
 }
 
+/* not used anywhere*/
 .proj-image {
     padding: 0px 10px 10px 10px; 
     max-height: 135px; 
@@ -566,8 +569,8 @@ a {
 }
 
 .proj-image-container {
-    height: 135px;
-    width: 135px;
+    height: 100px;
+    width: 100px;
     float:left;
     display: inline;
     line-height: 135px;
@@ -576,9 +579,11 @@ a {
 
 .proj-image-container img {
     padding: 0px 10px 10px 10px; 
-    max-height: 135px; 
-    max-width:135px;
+    max-height: 100px; 
+    max-width:100px;
     vertical-align: middle;
+    width: auto;
+    height: auto;
 }
 
 .buttons-container {
@@ -591,6 +596,28 @@ a {
     font-family: calibri, sans-serif;
 }
 
+#collapseModule {
+    width: 100%;
+  }
+  
+  #collapseModule p.collapse[aria-expanded="false"] {
+      display: block;
+      height: 40px !important;
+      overflow: hidden;      
+  }
+  
+  #modulcollapseModulee p.collapsing[aria-expanded="false"] {
+      height: 40px !important;      
+  }
+  
+  #collapseModule a.collapsed:after  {
+      content: '+ Show More';
+  }
+  
+  #collapseModule a:not(.collapsed):after {
+      content: '- Show Less';
+  }
+
 /* The class is old - Not used anymore */
 .proj-descrip-teams-vid {
     display: inline-block;
@@ -602,6 +629,10 @@ a {
 .proj-descrip-teams {
     font-family: calibri, sans-serif;
     font-size: 14.5px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    height: auto; 
 }
 
 .outer-wrapper {
@@ -1050,4 +1081,10 @@ label.small {
 .csv li { display: inline; }
 .csv li:after { content: ", "; }
 .csv li:last-child:after { content: ""; }
+
+/* Hide radio buttons for Admin panel navigation*/
+#option1, #option2, #option3, #option4, #option5 {
+    display: none;
+} 
+        
 

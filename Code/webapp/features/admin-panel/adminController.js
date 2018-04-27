@@ -1,154 +1,157 @@
-  (function () {
-    'use strict';
+(function () {
+	'use strict';
 
-    angular
-        .module('admin',['ui.bootstrap','angularUtils.directives.dirPagination','ui.toggle', 'mp.datePicker'])
-        .filter("dateFilter", function() {
-          return function(newDate) {
-            return new Date(newDate);
-          }
-        })
-        .controller('adminController', adminCtrl)
-    function adminCtrl($location, $window, $state,$timeout, $scope, $stateParams, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
-        var vm = this;
-        $scope.states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
-        $scope.showUserMaint = false
-        $scope.showSemesterMaint = false
-        $scope.showProjectMaint = false
-        $scope.showAdminPage = true
-		    $scope.showCoursePage = false
-        $scope.routeUserMaint = routeUserMaint
-        $scope.routeProjectMaintenance = routeProjectMaintenance
-        $scope.routeSemesterMaintenance = routeSemesterMaintenance
-        $scope.routeAdminMaint = routeAdminMaint
-        $scope.routeCourseMaintenance = routeCourseMaintenance
-        vm.currentSwitchStatus;
-        vm.proposableSwitchStatus;
-        vm.viewableSwitchStatus;
-        vm.applicableSwitchStatus;
-        vm.simulateQuery = false;
-		vm.isDisabled    = false;
+	angular
+		.module('admin', ['ui.bootstrap', 'angularUtils.directives.dirPagination', 'ui.toggle', 'mp.datePicker'])
+		.filter("dateFilter", function () {
+			return function (newDate) {
+				return new Date(newDate);
+			}
+		})
+		.controller('adminController', adminCtrl)
+	function adminCtrl($location, $window, $state, $timeout, $scope, $stateParams, adminService, User, reviewStudentAppService, ProfileService, reviewRegService, reviewProfileService, ProjectService, DateTimeService) {
+		var vm = this;
+		$scope.states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
+		$scope.showUserMaint = false
+		$scope.showSemesterMaint = false
+		$scope.showProjectMaint = false
+		$scope.showAdminPage = true
+		$scope.showCoursePage = false
+		$scope.routeUserMaint = routeUserMaint
+		$scope.routeProjectMaintenance = routeProjectMaintenance
+		$scope.routeSemesterMaintenance = routeSemesterMaintenance
+		$scope.routeAdminMaint = routeAdminMaint
+		$scope.routeCourseMaintenance = routeCourseMaintenance
 
-        //Column sorting
-        $scope.orderByFieldApp = ''
-        $scope.reverseSortApp = false;
-        $scope.orderByFieldProj = ''
-        $scope.reverseSortProj = false;
-        $scope.orderByFieldSem = ''
-        $scope.reverseSortSem = false;
-      // list of `state` value/display objects
-      vm.querySearch   = querySearch;
-      vm.selectedItemChange = selectedItemChange;
-      vm.searchTextChange   = searchTextChange;
-      function querySearch (query) {
-      var results = query ? vm.filteredusers.filter( createFilterFor(query) ) : vm.filteredusers,
-          deferred;
-      if (self.simulateQuery) {
-        deferred = $q.defer();
-        $timeout(function () { deferred.resolve( results ); }, Math.random() * 1000, false);
-        return deferred.promise;
-      } else {
-        return results;
-      }
-    }
+		vm.currentSwitchStatus;
+		vm.proposableSwitchStatus;
+		vm.viewableSwitchStatus;
+		vm.applicableSwitchStatus;
+		vm.simulateQuery = false;
+		vm.isDisabled = false;
 
-    function searchTextChange(text) {
-  $log.info('Text changed to ' + text);
-}
+		//Column sorting
+		$scope.orderByFieldApp = ''
+		$scope.reverseSortApp = false;
+		$scope.orderByFieldProj = ''
+		$scope.reverseSortProj = false;
+		$scope.orderByFieldSem = ''
+		$scope.reverseSortSem = false;
+		// list of `state` value/display objects
+		vm.querySearch = querySearch;
+		vm.selectedItemChange = selectedItemChange;
+		vm.searchTextChange = searchTextChange;
+		function querySearch(query) {
+			var results = query ? vm.filteredusers.filter(createFilterFor(query)) : vm.filteredusers,
+				deferred;
+			if (self.simulateQuery) {
+				deferred = $q.defer();
+				$timeout(function () { deferred.resolve(results); }, Math.random() * 1000, false);
+				return deferred.promise;
+			} else {
+				return results;
+			}
+		}
 
-function updateSelectedSemesterQueries(selectedSemester) {
-  $scope.query14 = selectedSemester;
-  $scope.queryp5 = selectedSemester;
-  $scope.queryC3 = selectedSemester;
-}
+		function searchTextChange(text) {
+			$log.info('Text changed to ' + text);
+		}
 
+		function updateSelectedSemesterQueries(selectedSemester) {
+			$scope.query14 = selectedSemester;
+			$scope.queryp5 = selectedSemester;
+			$scope.queryC3 = selectedSemester;
+		}
 
-function selectedItemChange(item) {
-  $log.info('Item changed to ' + JSON.stringify(item));
-}
-        function routeAdminMaint(){
-          $scope.showUserMaint = false;
-          $scope.showSemesterMaint = false;
-          $scope.showProjectMaint = false;
-          $scope.showAdminPage = true;
-          $scope.showCoursePage = false;
-        }
-        function routeUserMaint(){
-          $scope.showUserMaint = true;
-          $scope.showSemesterMaint = false;
-          $scope.showProjectMaint = false;
-          $scope.showAdminPage = false;
-          $scope.showCoursePage = false;
-        }
-        function routeProjectMaintenance(){
-          $scope.showUserMaint = false;
-          $scope.showSemesterMaint = false;
-          $scope.showProjectMaint = true;
-          $scope.showAdminPage = false;
-          $scope.showCoursePage = false;
-        }
-        function routeSemesterMaintenance(){
-          $scope.showUserMaint = false;
-          $scope.showSemesterMaint = true;
-          $scope.showProjectMaint = false;
-          $scope.showAdminPage = false;
-          $scope.showCoursePage = false;
-        }
-        function routeCourseMaintenance(){
-          $scope.showUserMaint = false;
-          $scope.showSemesterMaint = false;
-          $scope.showProjectMaint = false;
-          $scope.showAdminPage = false;
-          $scope.showCoursePage = true;
-        }
-        ProfileService.loadProfile().then(function (data) {
-            if (data) {
-                $scope.done = true;
-                vm.cuser = data;
-                var profile = data;
-                if (profile.userType != "Pi/CoPi") {
-                    //$location.path("/");
-                    $location.path('/').replace();
-                }
-                if(profile.selectedSemester) {
-                  reviewStudentAppService.getTerm(profile.selectedSemester).then(function(term) {
-                    updateSelectedSemesterQueries(term.name);
-                    vm.defaultSemester = term.name;
-                  })
-                }
-            }
-            else {
-                $scope.done = true;
-                $window.sessionStorage.setItem('lr', 'adminpanel');
-                $location.path('login').replace();
-            }
-        });
+		$scope.semesterFilter = function (myUser) { 		
+			return (myUser.semester === $scope.query14 && myUser.userType === 'Student') || (myUser.userType !== 'Student');			
+		};
+		function selectedItemChange(item) {
+			$log.info('Item changed to ' + JSON.stringify(item));
+		}
+		function routeAdminMaint() {
+			$scope.showUserMaint = false;
+			$scope.showSemesterMaint = false;
+			$scope.showProjectMaint = false;
+			$scope.showAdminPage = true;
+			$scope.showCoursePage = false;
+		}
+		function routeUserMaint() {
+			$scope.showUserMaint = true;
+			$scope.showSemesterMaint = false;
+			$scope.showProjectMaint = false;
+			$scope.showAdminPage = false;
+			$scope.showCoursePage = false;
+		}
+		function routeProjectMaintenance() {
+			$scope.showUserMaint = false;
+			$scope.showSemesterMaint = false;
+			$scope.showProjectMaint = true;
+			$scope.showAdminPage = false;
+			$scope.showCoursePage = false;			
+		}
+		function routeSemesterMaintenance() {
+			$scope.showUserMaint = false;
+			$scope.showSemesterMaint = true;
+			$scope.showProjectMaint = false;
+			$scope.showAdminPage = false;
+			$scope.showCoursePage = false;
+		}
+		function routeCourseMaintenance() {
+			$scope.showUserMaint = false;
+			$scope.showSemesterMaint = false;
+			$scope.showProjectMaint = false;
+			$scope.showAdminPage = false;
+			$scope.showCoursePage = true;
+		}
+		ProfileService.loadProfile().then(function (data) {
+			if (data) {
+				$scope.done = true;
+				vm.cuser = data;
+				var profile = data;
+				if (profile.userType != "Pi/CoPi") {
+					//$location.path("/");
+					$location.path('/').replace();
+				}
+				if (profile.selectedSemester) {
+					reviewStudentAppService.getTerm(profile.selectedSemester).then(function (term) {
+						updateSelectedSemesterQueries(term.name);
+						vm.defaultSemester = term.name;
+					})
+				}
+			}
+			else {
+				$scope.done = true;
+				$window.sessionStorage.setItem('lr', 'adminpanel');
+				$location.path('login').replace();
+			}
+		});
 
-        vm.users; //Confirmed users only (Email is verified)
-        vm.allusers; //All confirmed and unconfirmed users
-        vm.unconfirmedusers;//Unconfirmed users (Email is not verified)
-        vm.filteredusers; //filteredusers affected by filter function
-        vm.projects; //Projects that are active
+		vm.users; //Confirmed users only (Email is verified)
+		vm.allusers; //All confirmed and unconfirmed users
+		vm.unconfirmedusers;//Unconfirmed users (Email is not verified)
+		vm.filteredusers; //filteredusers affected by filter function
+		vm.projects; //Projects that are active
 		vm.courses; // Course list
-        vm.terms;
-        vm.currentSem;
-        vm.currentSemesterName;
-        vm.cStatus;
-        vm.vStatus;
-        vm.pStatus;
-        vm.aStatus;
-        // vm.currentSemesterName = [];// TODO Remove if not needed
-        vm.filterUsers = filterUsers;
-        vm.currentuserview;
-        vm.currentview = currentview;
-        vm.deleteUser = RemoveUser;
-        vm.changeUserType = changeUserType;
-        vm.ConfirmUser = ConfirmUser;
-        vm.RejectUser = RejectUser;
-        vm.seed = seed;
-        // userstory #1172
-        vm.exportData = exportData;
-        vm.tabledata = null;
+		vm.terms;
+		vm.currentSem;
+		vm.currentSemesterName;
+		vm.cStatus;
+		vm.vStatus;
+		vm.pStatus;
+		vm.aStatus;
+		// vm.currentSemesterName = [];// TODO Remove if not needed
+		vm.filterUsers = filterUsers;
+		vm.currentuserview;
+		vm.currentview = currentview;
+		vm.deleteUser = RemoveUser;
+		vm.changeUserType = changeUserType;
+		vm.ConfirmUser = ConfirmUser;
+		vm.RejectUser = RejectUser;
+		vm.seed = seed;
+		// userstory #1172
+		vm.exportData = exportData;
+		vm.tabledata = null;
 		// User story #1176
 		vm.allprojects; //All projects
 		vm.filteredprojects;
@@ -167,152 +170,227 @@ function selectedItemChange(item) {
 		vm.editingProjNewTitle;
 		// User story #1346
 		vm.courseFiles;
-    vm.semesterToBeDeleted;
-    vm.emailSemester;
+		vm.semesterToBeDeleted;
+		vm.emailSemester;
 
-        //Out of scope functions
-        vm.userTypeChange = userTypeChange;
-        vm.userChange = userChange;
-        vm.userinUnconfirmedfunc = userinUnconfirmedfunc;
+		vm.printFriendlyView = false;
+        vm.printFriendlyViewButtonText1 = "LIST VIEW";        
+        vm.printFriendlyViewfunc = printFriendlyViewfunc;
 
-        //For out of scope variables:
-        vm.userinusertype;
-        vm.userinprojects;
-        vm.usertypeinusertype;
-        vm.projectinprojects;
-        vm.userinunconfirmed;
-        vm.AddTerms = AddTerms;
-        vm.selectUser = function(user){
-           $scope.Selecteduserconfirm = user
-        }
+		//Out of scope functions
+		vm.userTypeChange = userTypeChange;
+		vm.userChange = userChange;
+		vm.userinUnconfirmedfunc = userinUnconfirmedfunc;
 
-        vm.currentUser = function (user) {
-            vm.cuser = user;
-        }
-        vm.currentProject = function (project) {
-            vm.cproject = project;
-        }
-        vm.currentTerm = function (term) {
-            vm.cterm = term;
-            if(term) {
-              vm.cStatus = term.status.currentSemester;
-              vm.vStatus = term.status.viewable;
-              vm.pStatus = term.status.openForProposal;
-              vm.aStatus = term.status.openForApply;
-              if(vm.currentSwitchStatus == null) { vm.currentSwitchStatus = term.status.currentSemester; }
-              if(vm.viewableSwitchStatus == null) { vm.viewableSwitchStatus = term.status.viewable; }
-              if(vm.proposableSwitchStatus == null) { vm.proposableSwitchStatus = term.status.openForProposal; }
-              if(vm.applicableSwitchStatus == null) { vm.applicableSwitchStatus = term.status.openForApply; }
-            }
-        }
-        vm.sw = ChangeUserProject;
-        vm.sc = ClearProject;
+		//For out of scope variables:
+		vm.userinusertype;
+		vm.userinprojects;
+		vm.usertypeinusertype;
+		vm.projectinprojects;
+		vm.userinunconfirmed;
+		vm.AddTerms = AddTerms;
+		vm.selectUser = function (user) {
+			$scope.Selecteduserconfirm = user
+		}
 
-        //Joe's User Story
-        vm.se = ChangeProjectStatus;
-        vm.nw = ChangeTermStatus;
+		vm.currentUser = function (user) {
+			vm.cuser = user;
+		}
+		vm.currentProject = function (project) {
+			vm.cproject = project;
+		}
+		vm.currentTerm = function (term) {
+			vm.cterm = term;
+			if (term) {
+				vm.cStatus = term.status.currentSemester;
+				vm.vStatus = term.status.viewable;
+				vm.pStatus = term.status.openForProposal;
+				vm.aStatus = term.status.openForApply;
+				if (vm.currentSwitchStatus == null) { vm.currentSwitchStatus = term.status.currentSemester; }
+				if (vm.viewableSwitchStatus == null) { vm.viewableSwitchStatus = term.status.viewable; }
+				if (vm.proposableSwitchStatus == null) { vm.proposableSwitchStatus = term.status.openForProposal; }
+				if (vm.applicableSwitchStatus == null) { vm.applicableSwitchStatus = term.status.openForApply; }
+			}
+		}
+		vm.sw = ChangeUserProject;
+		vm.sc = ClearProject;
 
-        vm.csf = currentSwitch;
-        vm.vsf = viewableSwitch;
-        vm.asf = applicableSwitch;
-        vm.psf = proposableSwitch;
-        vm.msc = makeSemesterChanges;
-        vm.cns = createNewSemester;
-        vm.ds = deleteSemester;
-        vm.defsb = setDefaultSemester;
-        vm.dsb = delSemButton;
-        vm.esb = editSemButton;
-        vm.rss = resetSemSettings;
-        vm.pi = printInfo;
-        vm.epo = emailProductOwners;
-        vm.ses = function(semester) {
-          vm.emailSemester = semester.name;
-        }
+		//Joe's User Story
+		vm.se = ChangeProjectStatus;
+		vm.nw = ChangeTermStatus;
 
-        function emailProductOwners() {
-          var users;
-          var productOwners = [];
-          var ownersEmailed = "The following Product Owners have been notified about the new " + vm.emailSemester + " semester: <br>";
+		vm.csf = currentSwitch;
+		vm.vsf = viewableSwitch;
+		vm.asf = applicableSwitch;
+		vm.psf = proposableSwitch;
+		vm.msc = makeSemesterChanges;
+		vm.cns = createNewSemester;
+		vm.ds = deleteSemester;
+		vm.defsb = setDefaultSemester;
+		vm.dsb = delSemButton;
+		vm.esb = editSemButton;
+		vm.rss = resetSemSettings;
+		vm.pi = printInfo;
+		vm.epo = emailProductOwners;
+		vm.ses = function (semester) {
+			vm.emailSemester = semester.name;
+		}
+		function printFriendlyViewfunc () {
+			vm.printFriendlyView = !vm.printFriendlyView;
+			if (!vm.printFriendlyView) {
+				vm.printFriendlyViewButtonText1 = "LIST VIEW";				
+			}
+			else  {
+				vm.printFriendlyViewButtonText1 = "TABLE VIEW";				
+			}
+		}
 
-          adminService.loadAllUsers().then(function (data) {
-            users = data;
-            users.forEach(function(user) {
-              if(user.userType == 'Staff/Faculty' || user.userType == 'Pi/CoPi') {
-                productOwners.push(
-                  {
-                    name: user.firstName + " " + user.lastName,
-                    email: user.email
-                  }
-                );
-              }
-            })
+		vm.siteSummaryItems;		
+		vm.buildSiteSummary = function () {	
+			vm.siteSummaryItems = [];
+			var total, total1, total2, total3, tooltip, tooltip1, tooltip2, tooltip3, total4, tooltip4, total5, tooltip5;
+			var bcR = "style={'background-color':'red'}";
+			var bcG = "style={'background-color':'goldenrod'}";
 
-            productOwners.forEach(function(owner) {
-              var email_msg =
-                {
-                  recipient: owner.email,
-                  text:  "The " + vm.emailSemester +
-                         " semester is now open for project proposals. If you are interested, you can do so now.",
-                  subject: "New Semester added to FIU VIP"
-                };
+			//vm.siteSummaryItems.push({summary:"Projects in the system 2", badgecount: 0,  badgecolor: bcG});
+			// Projects summary
+			if (vm.allprojects != null) {total=0; vm.allprojects.forEach(function(proj) {total+=1;}); 								
+				vm.siteSummaryItems.push({summary:"Projects in the system", badgecount:total,  badgecolor: bcG});}
+			if (vm.projects != null) {tooltip="";total=0; vm.projects.forEach(function(proj) {if (proj.status == 'pending') {tooltip+="Project: " + proj.title + "\n"; total += 1;} });
+				vm.siteSummaryItems.push({summary:"Projects pending approval", badgecount:total,  badgecolor: bcR, tooltip: tooltip});}
+			if (vm.projects != null) {tooltip="";total=0; total1=0;vm.projects.forEach(function(proj) {total+=1; if (proj.owner_name == null) {tooltip+="Project: " + proj.title + "\n"; total1+=1;}}); 								
+				vm.siteSummaryItems.push({summary:"Projects active", badgecount:total,  badgecolor: bcG});
+				vm.siteSummaryItems.push({summary:"Projects active without owner", badgecount:total1,  badgecolor: bcR, tooltip: tooltip});}
 
-              ownersEmailed = ownersEmailed + "- " + owner.name + "<br>";
-              User.nodeEmail(email_msg);
-            })
+			// Terms summary
+			// No current semester selected
+			if (vm.terms != null){
+				total=0;total1=0;
+				vm.terms.forEach(function (term, index) {
+					total+=1;
+					if (term.status.currentSemester) {
+						total1+=1;
+					}
+				});
+				if (total != 0 && total == total1){
+					vm.siteSummaryItems.push({summary:"No current semester selected", badgecount: 1, badgecolor: bcR });
+				}
+			}
 
-            var admin_email_msg =
-            {
-              recipient: vm.adminSettings.current_email,
-              text: ownersEmailed,
-              subject: "Product Owners Emailed"
-            };
-            User.nodeEmail(admin_email_msg);
-          });
-        }
+			// Users summary
+			if (vm.users != null) {
+				tooltip="";tooltip1="";tooltip2="";tooltip3="";tooltip4="";tooltip5="";
+				total=0; total1=0; total2=0; total3=0; total4=0;total5=0;
+				vm.allusers.forEach(function (user, index) {
+					total += 1; // Users in the system
+					if (user.project == null || user.rank == null || user.department == null || user.college == null) {tooltip1+="User: " + user.firstName +" " + user.lastName + "\n"; total1+=1;} 
+					if (user.userType == "Student" && (user.semester == null || user.semester != vm.defaultSemester )) {tooltip2+="User: " + user.firstName +" " + user.lastName + "\n"; total2+=1;} 
+					if (user.userType == null || user.pantherID == null) {tooltip3+="User: " + user.firstName +" " + user.lastName + "\n"; total3+=1;} 
+					if (!user.piApproval) {tooltip4+="User: " + user.firstName +" " + user.lastName + "\n"; total4+=1;} 
+					if (user.userType == "Student" && user.course == null) {tooltip5+="User: " + user.firstName +" " + user.lastName + "\n"; total5+=1;} 
+				});
+				vm.siteSummaryItems.push({summary:"Users in the system", badgecount: total, badgecolor: bcG });
+				vm.siteSummaryItems.push({summary:"Users with no project, rank, department, or college", badgecount:total1,  badgecolor: bcR, tooltip: tooltip1});
+				vm.siteSummaryItems.push({summary:"Students with no semester or not in default semester", badgecount:total2,  badgecolor: bcR, tooltip: tooltip2});
+				vm.siteSummaryItems.push({summary:"Students in no course", badgecount:total5,  badgecolor: bcR, tooltip: tooltip5});
+				vm.siteSummaryItems.push({summary:"Users with no user type or panther ID", badgecount:total3,  badgecolor: bcR, tooltip: tooltip3});
+				vm.siteSummaryItems.push({summary:"Users pending PI approval", badgecount:total4,  badgecolor: bcR, tooltip: tooltip4});
+			}			
+			if (vm.users != null) {total=0; vm.users.forEach(function(user, index) {total+=1;}); 								
+				vm.siteSummaryItems.push({summary:"Users Confirmed (email verified)", badgecount:total,  badgecolor: bcG});}
+			if (vm.users != null) {tooltip="";total=0; vm.unconfirmedusers.forEach(function(user, index) {tooltip+="User: " + user.firstName +" " + user.lastName + "\n"; total+=1;}); 								
+				vm.siteSummaryItems.push({summary:"Users Unconfirmed (email not verified)", badgecount:total,  badgecolor: bcR, tooltip: tooltip});}				
 
-        function printInfo() {
-          console.log("vm.cStatus: " + vm.cStatus);
-          console.log("vm.vStatus: " + vm.vStatus);
-          console.log("vm.pStatus: " + vm.pStatus);
-          console.log("vm.aStatus: " + vm.aStatus);
+		}
 
-          console.log("$scope.cStatus: " + $scope.cStatus);
-          console.log("$scope.vStatus: " + $scope.vStatus);
-          console.log("$scope.pStatus: " + $scope.pStatus);
-          console.log("$scope.aStatus: " + $scope.aStatus);
-        }
+		function emailProductOwners() {
+			var users;
+			var productOwners = [];
+			var ownersEmailed = "The following Product Owners have been notified about the new " + vm.emailSemester + " semester: <br>";
 
-        vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
-        //Joe's User Story
-        vm.status = ['Active', 'Disabled'];
-        vm.active = ['Active', 'Disabled'];
-        vm.open = ['Open', 'Closed'];
-        vm.getProjectTitle = function (email) {
-            if (email) {
-                if (vm.projects) {
-                    var results = vm.projects.filter(function (project) {
-                        return project.members.includes(email)
-                    });
-                    if (results.length >= 1) {
-                        return "Member of " + results[0].title + ".";
-                    }
-                    else {
-                        return "Hasn't joined any project!";
-                    }
-                }
-            }
-        };
+			adminService.loadAllUsers().then(function (data) {
+				users = data;
+				users.forEach(function (user) {
+					if (user.userType == 'Staff/Faculty' || user.userType == 'Pi/CoPi') {
+						productOwners.push(
+							{
+								name: user.firstName + " " + user.lastName,
+								email: user.email
+							}
+						);
+					}
+				})
 
-        vm.changeEmailSignature = function() {
-            vm.savesetting();
-        };
+				productOwners.forEach(function (owner) {
+					var email_msg =
+						{
+							recipient: owner.email,
+							text: "The " + vm.emailSemester +
+								" semester is now open for project proposals. If you are interested, you can do so now.",
+							subject: "New Semester added to FIU VIP"
+						};
+
+					ownersEmailed = ownersEmailed + "- " + owner.name + "<br>";
+					User.nodeEmail(email_msg);
+				})
+
+				var admin_email_msg =
+					{
+						recipient: vm.adminSettings.current_email,
+						text: ownersEmailed,
+						subject: "Product Owners Emailed"
+					};
+				User.nodeEmail(admin_email_msg);
+			});
+		}
+
+		function printInfo() {
+			console.log("vm.cStatus: " + vm.cStatus);
+			console.log("vm.vStatus: " + vm.vStatus);
+			console.log("vm.pStatus: " + vm.pStatus);
+			console.log("vm.aStatus: " + vm.aStatus);
+
+			console.log("$scope.cStatus: " + $scope.cStatus);
+			console.log("$scope.vStatus: " + $scope.vStatus);
+			console.log("$scope.pStatus: " + $scope.pStatus);
+			console.log("$scope.aStatus: " + $scope.aStatus);
+		}
+
+		vm.usertype = ['Staff/Faculty', 'Pi/CoPi', 'Student', 'Undefined'];
+		//Joe's User Story
+		vm.status = ['Active', 'Disabled'];
+		vm.active = ['Active', 'Disabled'];
+		vm.open = ['Open', 'Closed'];
+		vm.getProjectTitle = function (email) {
+			if (email) {
+				if (vm.projects) {
+					var results = vm.projects.filter(function (project) {
+						return project.members.includes(email)
+					});
+					if (results.length >= 1) {
+						return "Member of " + results[0].title + ".";
+					}
+					else {
+						return "Hasn't joined any project!";
+					}
+				}
+			}
+		};
+
+		vm.changeEmailSignature = function () {
+			vm.savesetting();
+		};
+
+		vm.changeProjectDeadlineDates = function () {
+			vm.savesetting();
+		};
 
 		// User Story 1345
 
 		// Add a course
-		vm.addCourse = function() {
+		vm.addCourse = function () {
 			if (!$scope.addNewCourseInputSubject || !$scope.addNewCourseInputNumber || !$scope.addNewCourseInputSection || !$scope.addNewCourseInputID ||
-			    !$scope.addCourseTerm || $scope.addNewCourseInputSubject.length < 3 || $scope.addNewCourseInputNumber.length < 4) {
+				!$scope.addCourseTerm || $scope.addNewCourseInputSubject.length < 3 || $scope.addNewCourseInputNumber.length < 4) {
 				var errMsg = "";
 				if (!$scope.addNewCourseInputSubject)
 					errMsg += "\tSubject Missing\n";
@@ -330,13 +408,13 @@ function selectedItemChange(item) {
 					errMsg += "\tSemester Missing\n";
 
 				swal({
-                    title: "Error",
-                    text: errMsg,
-                    type: "error",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-					}, function () {}
+					title: "Error",
+					text: errMsg,
+					type: "error",
+					confirmButtonText: "Continue",
+					allowOutsideClick: true,
+					timer: 10000,
+				}, function () { }
 				);
 			}
 
@@ -348,7 +426,7 @@ function selectedItemChange(item) {
 				vm.courses.forEach(function (course) {
 					if (course.fullName == courseFullName)
 						found = true;
-                });
+				});
 				if (!found) { // Create the new course and save it
 					var newCourse = {
 						name: courseName,
@@ -360,7 +438,7 @@ function selectedItemChange(item) {
 						fullName: courseFullName
 					};
 
-					if($scope.addNewCourseInputTitle != "")
+					if ($scope.addNewCourseInputTitle != "")
 						newCourse["title"] = $scope.addNewCourseInputTitle;
 
 					adminService.addCourse(newCourse).then(function (data) {
@@ -374,7 +452,7 @@ function selectedItemChange(item) {
 							confirmButtonText: "Continue",
 							allowOutsideClick: true,
 							timer: 10000,
-							}, function () {}
+						}, function () { }
 						);
 					});
 					// Clear Input fields
@@ -389,7 +467,7 @@ function selectedItemChange(item) {
 		};
 
 		// Remove a course
-		vm.removeCourse = function(removingCourse) {
+		vm.removeCourse = function (removingCourse) {
 			var courseFullName = removingCourse.fullName;
 
 			adminService.deleteCourse(removingCourse._id).then(function (data) {
@@ -404,7 +482,7 @@ function selectedItemChange(item) {
 					vm.allusers.forEach(function (user, index) {
 						if (user.course == courseFullName) {
 							user.course = null;
-							User.update({user: user});
+							User.update({ user: user });
 						}
 					});
 					// Refresh User panel
@@ -422,7 +500,7 @@ function selectedItemChange(item) {
 						confirmButtonText: "Continue",
 						allowOutsideClick: true,
 						timer: 10000,
-						}, function () {}
+					}, function () { }
 					);
 				}
 			});
@@ -431,7 +509,7 @@ function selectedItemChange(item) {
 		// User Story #1362
 
 		// Populate the edit course modal with current course info
-		vm.editCourse = function(course) {
+		vm.editCourse = function (course) {
 			vm.editingCourse = course;
 			vm.editingCourseOrig = {
 				name: course.name,
@@ -445,20 +523,20 @@ function selectedItemChange(item) {
 			$scope.editCourseInputID = vm.editingCourse.course_id;
 			$scope.editCourseInputTitle = vm.editingCourse.title;
 			$scope.editCourseTerm = vm.editingCourse.semester;
-        };
+		};
 
 		// Update the editing course with new information
-		vm.saveChangesCourse = function() {
+		vm.saveChangesCourse = function () {
 			// Check if required information is missing
 			if ($scope.editCourseInputSubject && $scope.editCourseInputNumber && $scope.editCourseInputSection && $scope.editCourseInputID) {
 				// Confirm that the changed course does not become a copy of an existing course
 				var newFullName = $scope.editCourseInputSubject + ' ' + $scope.editCourseInputNumber + ' - ' + $scope.editCourseInputSection + ' ' +
-								  $scope.editCourseTerm.name + ' (' + $scope.editCourseInputID + ')';
+					$scope.editCourseTerm.name + ' (' + $scope.editCourseInputID + ')';
 				var found = false;
 				vm.courses.forEach(function (course) {
 					if (course.fullName == newFullName)
 						found = true;
-                });
+				});
 				if (!found) {
 					updateCourse();
 				}
@@ -487,7 +565,7 @@ function selectedItemChange(item) {
 			vm.editingCourse.fullName = vm.editingCourse.name + ' ' + vm.editingCourse.semester + ' (' + vm.editingCourse.course_id + ')';
 
 			// Send PUT request
-			adminService.updateCourse(vm.editingCourse, vm.editingCourse._id).then(function(data) {
+			adminService.updateCourse(vm.editingCourse, vm.editingCourse._id).then(function (data) {
 				if (data) {
 					if (data.success) {
 						document.getElementById('editCourseMessage').innerHTML = 'Editing course was successful';
@@ -516,7 +594,7 @@ function selectedItemChange(item) {
 					user.course = vm.editingCourse.fullName;
 					// Update the user
 					//console.log(user.course);
-					User.update({user: user});
+					User.update({ user: user });
 					//console.log('updated');
 				}
 			});
@@ -528,27 +606,40 @@ function selectedItemChange(item) {
 		// User Story #1346
 
 		vm.addCourseFileName;
-		vm.addCourseData; // Holds the parsed XLS data after onchanged event fires
+		vm.addCourseData; // Holds the parsed TXT data after onchanged event fires
 
-		// Parse the XLS file using File API
+		// Parse the TXT file using File API
 		function handleFile(e) {
 			if (document.getElementById('courseFileInput').value) {
 				var files = e.target.files, fileSource = files[0];
 				var reader = new FileReader();
-				reader.onload = function(e) {
-					vm.addCourseData = parseXLS(e.target.result);
+				reader.onload = function (e) {
+					vm.addCourseData = parseTXT(e.target.result, document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, ''));
 				};
 				reader.readAsText(fileSource);
 
 				// Read fileName and check if existing course exists to set as default course
 				vm.addCourseFileName = document.getElementById('courseFileInput').value.replace(/.*[\/\\]/, '');
-				parseFileName(vm.addCourseFileName);
+				matchOrCreateCourse(vm.addCourseFileName);
 			}
 		};
 		document.getElementById('courseFileInput').addEventListener('change', handleFile, false);
+		
+		//Adds files retrieved from the server 
+		vm.getCourseFilesFromServer = function() {
+			vm.clearCourseFiles();
+			var courseFiles = adminService.getCourseFiles().then(function(data) {				
+				data.forEach(function(file) {
+					vm.addCourseData = parseTXT(file.content, file.fileName);
+					vm.addCourseFileName = file.fileName;
+					matchOrCreateCourse(vm.addCourseFileName);
+					vm.addCourseFile()
+				})
+			});
+		}
 
 		// Updates the course select box with best fit course given the file name
-		function parseFileName(file) {
+		function matchOrCreateCourse(file) {
 			try {
 				var currentTerms = [], currentTermIndex = -1;
 				vm.terms.forEach(function (term, index) {
@@ -563,24 +654,45 @@ function selectedItemChange(item) {
 				document.getElementById('syncCourseSelect').selectedIndex = -1;
 				// Hide add course table
 				$scope.showAddCourse = false;
-				$scope.$digest();
+				//$scope.$digest();
 
 				//console.log("courseMatch:", file, file.match(/[A-Z]{3}\s+[0-9]{4}\s+-\s+[A-Z0-9]+\s+([0-9]+)/));
 				// Try to match a segment of the file name with a course from a current semester
 				var found = false;
+				var selectIndex = -1;
+				var indexQuality = -1;
+				file = file.toUpperCase();
 				vm.courses.forEach(function (course, index) {
 					currentTerms.forEach(function (cTerm) {
 						if (course.semester == cTerm) {
-							if (file.match('(' + course.course_id + ')')) {
-								console.log("course found");
-								// Update course selection box
-								$scope.syncCourseSelect = vm.courses[index];
-								document.getElementById('syncCourseSelect').selectedIndex = index+1;
-								found = true;
+							if (file.indexOf(course.number) != -1 &&
+								file.indexOf(course.subject.toUpperCase()) != -1 &&
+								file.indexOf(course.section.toUpperCase()) != -1) {
+
+								selectIndex = index;
+								indexQuality = 3;
+							}
+							else if (file.indexOf(course.number) != -1 && file.indexOf(course.subject.toUpperCase()) != -1) {
+								if (indexQuality < 2) { selectIndex = index; indexQuality = 2; }
+							}
+							else if (file.indexOf(course.number) != -1) {
+								if (indexQuality < 1) { selectIndex = index; indexQuality = 1; }
+							}
+							else if (file.indexOf(course.subject.toUpperCase()) != -1) {
+								if (indexQuality < 0) { selectIndex = index; indexQuality = 0; }
 							}
 						}
 					});
 				});
+				//console.log("indexQuality: ", indexQuality);
+				if (selectIndex != -1) {
+					console.log("course found");
+					// Update course selection box
+					$scope.syncCourseSelect = vm.courses[selectIndex];
+					document.getElementById('syncCourseSelect').selectedIndex = selectIndex + 1;
+					found = true;
+				}
+
 				// Create a course object that would represent this course File
 				if (!found) {
 					console.log("course not found");
@@ -604,7 +716,7 @@ function selectedItemChange(item) {
 						$scope.addNewCourseInputSection2 = newCourseData.section;
 						$scope.addNewCourseInputID2 = newCourseData.course_id;
 						$scope.addCourseTerm2 = vm.terms[currentTermIndex];
-						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex+1;
+						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex + 1;
 						$scope.$digest();
 
 						// Prompt User to Comfirm course match
@@ -615,7 +727,7 @@ function selectedItemChange(item) {
 							confirmButtonText: "Continue",
 							allowOutsideClick: false,
 							timer: 10000,
-							}, function () {}
+						}, function () { }
 						);
 					}
 					else {
@@ -627,7 +739,7 @@ function selectedItemChange(item) {
 						$scope.addNewCourseInputSection2 = "";
 						$scope.addNewCourseInputID2 = "";
 						$scope.addCourseTerm2 = vm.terms[currentTermIndex];
-						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex+1;
+						document.getElementById('addCourseTerm2').selectedIndex = currentTermIndex + 1;
 						$scope.$digest();
 						// Prompt User to enter course information
 						swal({
@@ -637,27 +749,31 @@ function selectedItemChange(item) {
 							confirmButtonText: "Continue",
 							allowOutsideClick: true,
 							timer: 10000,
-							}, function () {}
+						}, function () { }
 						);
 					}
 				}
 			}
-			catch (err) { /* Don't try match with filename that cannot be parsed */ }
+			catch (err) {  console.log(err) }
 		};
 
 		// Adds a course file to course file list
-		vm.addCourseFile = function() {
-			if ($scope.syncCourseSelect && document.getElementById('courseFileInput').value) {
+		vm.addCourseFile = function () {
+			if ($scope.syncCourseSelect && vm.addCourseFileName) {
 				// test if duplicate exists in courseFiles list
 				var courseName = $scope.syncCourseSelect.fullName;
 				var found = false;
+				var fileWithSameCourseName = '';
 
 				vm.courseFiles.forEach(function (courseFile) {
-					if (courseFile.course.fullName == courseName)
+					if (courseFile.course.fullName == courseName){
 						found = true;
+						fileWithSameCourseName = courseFile.file;
+					}
 				});
-				if (!found) {
-					// Test whether file data was successfully pulled from xls file
+				if (!found || ((fileWithSameCourseName.match('.*-.*-.*-INC\.txt') && vm.addCourseFileName.match('.*-.*-.*\.txt')) ||
+				fileWithSameCourseName.match('.*-.*-.*\.txt') && vm.addCourseFileName.match('.*-.*-.*-INC\.txt'))) {
+					// Test whether file data was successfully pulled from TXT file
 					if (vm.addCourseData != null) {
 						// Create the new courseFile and add it to the list
 						var newCourseFile = {
@@ -670,7 +786,6 @@ function selectedItemChange(item) {
 						// Clear Data and UI
 						$scope.syncCourseSelect = "";
 						document.getElementById('syncCourseSelect').selectedIndex = -1;
-						document.getElementById('courseFileInput').value = null;
 						vm.addCourseFileName = null;
 						vm.addCourseData = null;
 						// Hide add course table
@@ -680,7 +795,6 @@ function selectedItemChange(item) {
 						// Clear Data and UI
 						$scope.syncCourseSelect = "";
 						document.getElementById('syncCourseSelect').selectedIndex = -1;
-						document.getElementById('courseFileInput').value = null;
 						vm.addCourseFileName = null;
 						vm.addCourseData = null;
 						// Hide add course table
@@ -693,10 +807,10 @@ function selectedItemChange(item) {
 							confirmButtonText: "Continue",
 							allowOutsideClick: true,
 							timer: 10000,
-							}, function () {}
+						}, function () { }
 						);
 					}
-				}
+				}				
 				else {
 					swal({
 						title: "Error",
@@ -705,14 +819,14 @@ function selectedItemChange(item) {
 						confirmButtonText: "Continue",
 						allowOutsideClick: true,
 						timer: 10000,
-						}, function () {}
+					}, function () { }
 					);
 				}
 			}
 		};
 
 		// Add a course within the course file modal
-		vm.addCourse2 = function() {
+		vm.addCourse2 = function () {
 			if (!$scope.addNewCourseInputSubject2 || !$scope.addNewCourseInputNumber2 || !$scope.addNewCourseInputSection2 ||
 				!$scope.addNewCourseInputID2 || !$scope.addCourseTerm2 ||
 				$scope.addNewCourseInputSubject2.length < 3 || $scope.addNewCourseInputNumber2.length < 4) {
@@ -733,13 +847,13 @@ function selectedItemChange(item) {
 					errMsg += "\tSemester Missing\n";
 
 				swal({
-                    title: "Error",
-                    text: errMsg,
-                    type: "error",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,
-					}, function () {}
+					title: "Error",
+					text: errMsg,
+					type: "error",
+					confirmButtonText: "Continue",
+					allowOutsideClick: true,
+					timer: 10000,
+				}, function () { }
 				);
 			}
 
@@ -752,7 +866,7 @@ function selectedItemChange(item) {
 				vm.courses.forEach(function (course) {
 					if (course.fullName == courseFullName)
 						found = true;
-                });
+				});
 				if (!found) { // Create the new course and save it
 					var newCourse = {
 						name: courseName,
@@ -764,13 +878,13 @@ function selectedItemChange(item) {
 						fullName: courseFullName
 					};
 
-					if($scope.addNewCourseInputTitle2 != "")
+					if ($scope.addNewCourseInputTitle2 != "")
 						newCourse["title"] = $scope.addNewCourseInputTitle2;
 
 					adminService.addCourse(newCourse).then(function (data) {
 						vm.courses.push(data);
 						// Update course selection box
-						$scope.syncCourseSelect = vm.courses[vm.courses.length-1];
+						$scope.syncCourseSelect = vm.courses[vm.courses.length - 1];
 
 						// Notify User of Added Course
 						swal({
@@ -780,7 +894,7 @@ function selectedItemChange(item) {
 							confirmButtonText: "Continue",
 							allowOutsideClick: true,
 							timer: 10000,
-							}, function () {}
+						}, function () { }
 						);
 					});
 					// Hide add course table
@@ -797,57 +911,78 @@ function selectedItemChange(item) {
 			}
 		};
 
-		// Parse XLS file into readable data
-		function parseXLS(file) {
-			var entries = file.split(/<\s*tr\s*>/);
-			//console.log('entries:', entries);
-			var users = [];
-			// Determine which column contains which information
-			var columns = entries[1].split(/<\s*th\s*>/);
-			var indexes = {
-				pid: -1, email: -1, name: -1
-			};
-			for (var i=1; i<columns.length; i++) {
-				if (columns[i].match(/ID/))
-					indexes.pid = i;
-				if (columns[i].match(/Email/))
-					indexes.email = i;
-				if (columns[i].match(/Name/))
-					indexes.name = i;
-			}
-			//console.log('indexes:', indexes);
-			if (indexes.pid == -1 || indexes.email == -1 || indexes.name == -1) {
-				// Missing indexes, return null as a flag that parsing failed
-				return null;
-			}
-			else {
-				for (var i=2; i<entries.length; i++) {
-					try {
-						var entryData = entries[i].split(/<\s*td\s*>/);
-						//console.log('entryData:', entryData);
+		// Parse TXT file into readable data
+		function parseTXT(file, fileName) {
+			var entries = file.split("\n"); // Splits at the end of line. entries has the rows now
 
-						var pid = entryData[indexes.pid].split(/<\s*\/\s*td\s*>/);
-						var email = entryData[indexes.email].split(/<\s*\/\s*td\s*>/);
-						var name = entryData[indexes.name].split(/<\s*\/\s*td\s*>/);
-						var nameTokens = name[0].split(',');
-						var firstAndMidName = nameTokens[1].split(' ');
-						var newUser = {
-							pantherID: pid[0],
-							email: email[0],
-							firstName: firstAndMidName[0],
-							lastName: nameTokens[0]
-						};
-						//console.log('newUser:', newUser);
-						users.push(newUser);
-					}
-					catch (err) { /* Don't push data that cannot be parsed */ }
-				}
-				return users;
+			if (entries[entries.length - 1] == null || entries[entries.length - 1] == "") {
+				entries.pop(); // Sometimes the file has an empty line at the end. This will remove it.
 			}
+
+			var users = [];
+			for (var i = 0; i < entries.length; i++) {
+				var rowArr = entries[i].split("::");
+				if (rowArr.length != 3) {
+					alert("Incorrect file format: Not all entries have three columns. Row:" + (i + 1));
+					return null;
+				}
+
+				var pID = rowArr[1];
+				if (pID.length != 7) {
+					alert("Incorrect file format: PantherID length is not equal to 7. Row: " + (i + 1));
+					return null;
+				}
+
+				var userLoginName = rowArr[0].toLowerCase();
+				var fullName = rowArr[2];
+				var email = userLoginName + "@fiu.edu";
+				console.log(userLoginName.match('\\d+'));
+				var lastNameFirst4 = userLoginName.slice(1, userLoginName.match('\\d+').index);
+				console.log(fullName);
+				console.log(lastNameFirst4);
+				
+				var nameParts = fullName.split(" ");
+				var current = "";
+				var index = -1;
+				
+				for (var j= nameParts.length - 1; j > 0; j--){	
+					current = (nameParts[j].toLowerCase() + " " + current).trim();				
+					index = current.replace(" ", "").indexOf(lastNameFirst4);
+					if(index != -1){
+						break;
+					}
+				};
+				if (index == -1) {
+					alert("Incorrect file format: On file: " + fileName + " Student name does not match login user name structure.On Row: " + (i + 1));
+					return null;
+				}
+				var firstAndMidName = fullName.slice(0, fullName.toLowerCase().indexOf(current) - 1);
+				var lastName = fullName.slice(fullName.toLowerCase().indexOf(current), fullName.length);
+
+				var newUser = {
+					pantherID: pID,
+					email: email,
+					firstName: capitalizeFirstLetter(firstAndMidName),
+					lastName: capitalizeFirstLetter(lastName),
+					userType: "Student"
+				};
+
+				users.push(newUser);
+			}
+			console.log('users', users);
+			return users;
 		};
 
+		function capitalizeFirstLetter(strings) {
+			var result = "";
+			strings.split(" ").forEach(function (string){
+				result = result + " " + string.charAt(0).toUpperCase() + string.slice(1);
+			});	
+			return result.trim();		
+		}
+
 		// Removes a course file from course file list
-		vm.removeCourseFile = function(removingCourseFile) {
+		vm.removeCourseFile = function (removingCourseFile) {
 			vm.courseFiles.forEach(function (courseFile, index) {
 				if (courseFile.course.fullName == removingCourseFile.course.fullName) {
 					vm.courseFiles.splice(index, 1);
@@ -856,7 +991,14 @@ function selectedItemChange(item) {
 		};
 
 		// Updates each course with its corresponding courseFile in the database
-		vm.syncDatabase = function() {
+		vm.syncDatabase = function () {
+			if (vm.courseFiles.length == 0) {
+				alert("No data to process. Please add a file/course to the list");
+				return;
+			}
+			
+			var studentsAdded = 0, studentsUpdated = 0, studentsRemovedFromCourses  = 0, studentsProcessed = 0;
+
 			// Build map for users for fast lookup
 			var userMap = new Map();
 			vm.allusers.forEach(function (user, index) {
@@ -866,27 +1008,33 @@ function selectedItemChange(item) {
 			vm.courseFiles.forEach(function (courseFile, indexA) {
 				// Map for users in this course file
 				var courseEnrolled = new Map();
-
+				
 				courseFile.data.forEach(function (courseUser, indexB) {
-					courseEnrolled.set(courseUser.email, indexB+1);
+					studentsProcessed+=1;
+					courseEnrolled.set(courseUser.email, indexB + 1);
 					// Determine if user exists already
 					if (userMap.get(courseUser.email)) {
 						// Determine if user needs to be updated
 						var testUser = vm.allusers[userMap.get(courseUser.email)];
 						var needUpdate = false;
 
-						if (testUser.course != courseFile.course.name) {
+						if (testUser.course != courseFile.course.fullName) {							
 							needUpdate = true;
 						}
-						if (testUser.isEnrolled != true) {
+						if (testUser.pantherID != courseUser.pantherID) {							
+							needUpdate = true;
+						}
+						if (testUser.isEnrolled != true) {							
 							needUpdate = true;
 						}
 
 						// Update the user in the database
 						if (needUpdate) {
+							studentsUpdated+=1;
 							testUser.course = courseFile.course.fullName;
+							testUser.pantherID = courseUser.pantherID;
 							testUser.isEnrolled = true;
-							User.update({user: testUser});
+							User.update({ user: testUser });
 						}
 					}
 					else { // User doesn't exist, create a new user and add it to the database & user lists
@@ -896,8 +1044,8 @@ function selectedItemChange(item) {
 						courseUser['piApproval'] = true;
 						courseUser['adminCreated'] = true;
 						courseUser['RegDate'] = DateTimeService.getCurrentDateTimeAsString();
-
-						User.create(courseUser).then(function(data) {
+						studentsAdded+=1;
+						User.create(courseUser).then(function (data) {
 							if (data) {
 								if (data.data.success) {
 									userMap.set(courseUser.email, vm.allusers.length);
@@ -910,7 +1058,7 @@ function selectedItemChange(item) {
 						});
 					}
 				});
-
+				
 				// Remove users that are no longer in this specific course
 				vm.allusers.forEach(function (user, index) {
 					if (!courseEnrolled.get(user.email)) {
@@ -918,7 +1066,8 @@ function selectedItemChange(item) {
 							// Update the user in the database
 							user.course = "";
 							user.isEnrolled = false;
-							User.update({user: user});
+							User.update({ user: user });
+							studentsRemovedFromCourses+=1;
 						}
 					}
 				});
@@ -931,17 +1080,21 @@ function selectedItemChange(item) {
 
 			swal({
 				title: "Success",
-				text: "Users database has been updated with the uploaded course file data",
+				text: "Students data updated with the course file" +
+					   "\nRecords processed: " + studentsProcessed +
+					   "\nStudents added: " + studentsAdded +
+					   "\nStudents updated: " + studentsUpdated +
+					   "\nStudents removed from course(s): " + studentsRemovedFromCourses,
 				type: "success",
 				confirmButtonText: "Continue",
 				allowOutsideClick: true,
 				timer: 10000,
-				}, function () {}
+			}, function () { }
 			);
 		};
 
 		// Clears the course file list & resets input
-		vm.clearCourseFiles = function() {
+		vm.clearCourseFiles = function () {
 			vm.courseFiles = [];
 			document.getElementById('syncCourseSelect').selectedIndex = -1;
 			document.getElementById('courseFileInput').value = null;
@@ -957,140 +1110,140 @@ function selectedItemChange(item) {
 		};
 
 		vm.colleges = [
-                {
-                    name: 'Architecture & The Arts',
-                    schools: [
-                        'Architecture',
-                        'Interior Architecture',
-                        'Landscape Architecture and Environmental Urban Design',
-                        'Art and Art History',
-                        'Communication Arts',
-                        'School of Music',
-                        'Theatre']
-                },
-                {
-                    name: 'Arts and Sciences & Education',
-                    schools: [
-                        'Biological Sciences',
-                        'Chemistry and Biochemistry',
-                        'Earth and Environment',
-                        'English',
-                        'Mathematics and Statistics',
-                        'Philosophy',
-                        'Physics',
-                        'Psychology',
-                        'Teaching and Learning',
-                        'Leadership and Professional Studies',
-                        'School of Education',
-                        'School of Enviroment, Arts & Society',
-                        'School of Integrated Science & Humanity'
-                    ]
-                },
-                {
-                    name: 'Business',
-                    schools: [
-                        'Decision Sciences and Information Systems',
-                        'Alvah H. Chapman Jr. Graduate School of Business',
-                        'R. Kirk Landon Undergraduate School of Business',
-                        'Finance',
-                        'Management and International Business',
-                        'Marketing',
-                        'School of Accounting',
-                        'Real Estate'
-                    ]
-                },
-                {
-                    name: 'Chaplin School of Hospitality and Tourism Management',
-                    schools: [
-                        'Hospitality and Tourism Management'
-                    ]
-                },
-                {
-                    name: 'Engineering & Computing',
-                    schools: [
-                        'School of Computing and Information Sciences',
-                        'OHL School of Construction',
-                        'Department of Biomedical Engineering',
-                        'Department of Civil and Environment Engineering',
-                        'Department of Electrical and Computer Engineering',
-                        'Department of Mechanical and Materials Engineering'
-                    ]
-                },
-                {
-                    name: 'Herbert Wertheim College of Medicine',
-                    schools: [
-                        'Cellular Biology and Pharmacology',
-                        'Human and Molecular Genetics',
-                        'Immunology',
-                        'Medical and Population Health Sciences Research'
-                    ]
-                },
-                {
-                    name: 'Honors College',
-                    schools: []
-                },
-                {
-                    name: 'Journalism and Mass Communication',
-                    schools: [
-                        'Advertising and Public Relations',
-                        'Journalism Broadcasting and Digital Media'
-                    ]
-                },
-                {
-                    name: 'Law',
-                    schools: [
-                        'College of Law'
-                    ]
-                },
-                {
-                    name: 'Nicole Wertheim College of Nursing & Health Sciences',
-                    schools: [
-                        'Biostatistics',
-                        'Dietetics and Nutrition',
-                        'Environmental and Occupational Health',
-                        'Epidemiology',
-                        'Health Policy and Management',
-                        'Health Promotion and Disease Prevention'
-                    ]
-                },
-                {
-                    name: 'Robert Stempel College of Public Health & Social Work',
-                    schools: [
-                        'School of Social Work'
-                    ]
-                },
-                {
-                    name: 'Steven J. Green School of International and Public Affairs',
-                    schools: [
-                        'Criminal Justice',
-                        'Economics',
-                        'Global and Sociocultural Studies',
-                        'History',
-                        'Modern Languages',
-                        'Public Administration',
-                        'Religious Studies'
-                    ]
-                }
-            ];
+			{
+				name: 'Architecture & The Arts',
+				schools: [
+					'Architecture',
+					'Interior Architecture',
+					'Landscape Architecture and Environmental Urban Design',
+					'Art and Art History',
+					'Communication Arts',
+					'School of Music',
+					'Theatre']
+			},
+			{
+				name: 'Arts and Sciences & Education',
+				schools: [
+					'Biological Sciences',
+					'Chemistry and Biochemistry',
+					'Earth and Environment',
+					'English',
+					'Mathematics and Statistics',
+					'Philosophy',
+					'Physics',
+					'Psychology',
+					'Teaching and Learning',
+					'Leadership and Professional Studies',
+					'School of Education',
+					'School of Enviroment, Arts & Society',
+					'School of Integrated Science & Humanity'
+				]
+			},
+			{
+				name: 'Business',
+				schools: [
+					'Decision Sciences and Information Systems',
+					'Alvah H. Chapman Jr. Graduate School of Business',
+					'R. Kirk Landon Undergraduate School of Business',
+					'Finance',
+					'Management and International Business',
+					'Marketing',
+					'School of Accounting',
+					'Real Estate'
+				]
+			},
+			{
+				name: 'Chaplin School of Hospitality and Tourism Management',
+				schools: [
+					'Hospitality and Tourism Management'
+				]
+			},
+			{
+				name: 'Engineering & Computing',
+				schools: [
+					'School of Computing and Information Sciences',
+					'OHL School of Construction',
+					'Department of Biomedical Engineering',
+					'Department of Civil and Environment Engineering',
+					'Department of Electrical and Computer Engineering',
+					'Department of Mechanical and Materials Engineering'
+				]
+			},
+			{
+				name: 'Herbert Wertheim College of Medicine',
+				schools: [
+					'Cellular Biology and Pharmacology',
+					'Human and Molecular Genetics',
+					'Immunology',
+					'Medical and Population Health Sciences Research'
+				]
+			},
+			{
+				name: 'Honors College',
+				schools: []
+			},
+			{
+				name: 'Journalism and Mass Communication',
+				schools: [
+					'Advertising and Public Relations',
+					'Journalism Broadcasting and Digital Media'
+				]
+			},
+			{
+				name: 'Law',
+				schools: [
+					'College of Law'
+				]
+			},
+			{
+				name: 'Nicole Wertheim College of Nursing & Health Sciences',
+				schools: [
+					'Biostatistics',
+					'Dietetics and Nutrition',
+					'Environmental and Occupational Health',
+					'Epidemiology',
+					'Health Policy and Management',
+					'Health Promotion and Disease Prevention'
+				]
+			},
+			{
+				name: 'Robert Stempel College of Public Health & Social Work',
+				schools: [
+					'School of Social Work'
+				]
+			},
+			{
+				name: 'Steven J. Green School of International and Public Affairs',
+				schools: [
+					'Criminal Justice',
+					'Economics',
+					'Global and Sociocultural Studies',
+					'History',
+					'Modern Languages',
+					'Public Administration',
+					'Religious Studies'
+				]
+			}
+		];
 
-    function currentSwitch(e) {
-      vm.currentSwitchStatus = e == 'true' ? true : false;
-    }
+		function currentSwitch(e) {
+			vm.currentSwitchStatus = e == 'true' ? true : false;
+		}
 
-    function viewableSwitch(e) {
-      vm.viewableSwitchStatus = e == 'true' ? true : false;
-    }
+		function viewableSwitch(e) {
+			vm.viewableSwitchStatus = e == 'true' ? true : false;
+		}
 
-    function proposableSwitch(e) {
-      vm.proposableSwitchStatus = e == 'true' ? true : false;
-    }
+		function proposableSwitch(e) {
+			vm.proposableSwitchStatus = e == 'true' ? true : false;
+		}
 
-    function applicableSwitch(e) {
-      vm.applicableSwitchStatus = e == 'true' ? true : false;
-    }
+		function applicableSwitch(e) {
+			vm.applicableSwitchStatus = e == 'true' ? true : false;
+		}
 
 		function validateEmail(email) {
-            return /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)
+			return /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)
 		};
 
 		function validatePassword(pwd) {
@@ -1124,11 +1277,11 @@ function selectedItemChange(item) {
 				string.indexOf(')') != -1);
 		};
 
-		vm.genderOptions = [{type: 'Male'}, {type: 'Female'}];
-		vm.booleanOptions = [{type: true}, {type: false}];
+		vm.genderOptions = [{ type: 'Male' }, { type: 'Female' }];
+		vm.booleanOptions = [{ type: true }, { type: false }];
 
 		// user story #1300
-		vm.editUser = function(user) {
+		vm.editUser = function (user) {
 			vm.editingUser = user;
 			vm.editingUserOrig = {
 				firstName: user.firstName,
@@ -1149,6 +1302,8 @@ function selectedItemChange(item) {
 				college: findIndexCollege(vm.editingUser.college),
 				userType: findIndexUserType(vm.editingUser.userType),
 				approval: findIndexApproval(vm.editingUser.piApproval),
+				emailVerification: findIndexApproval(vm.editingUser.verifiedEmail),
+				enrolled: findIndexApproval(vm.editingUser.isEnrolled),
 				project: findIndexProject(vm.editingUser.project),
 				term: findIndexTerm(vm.editingUser.semester),
 				course: findIndexCourse(vm.editingUser.course)
@@ -1186,6 +1341,17 @@ function selectedItemChange(item) {
 				$scope.editUserPIApproval = vm.booleanOptions[indexes.approval];
 			else
 				document.getElementById("ddPIApproval").selectedIndex = -1;
+			//User story #1419
+			if (indexes.approval != -1)
+				$scope.editUserVerifyEmail = vm.booleanOptions[indexes.emailVerification];
+			else
+				document.getElementById("ddVerifyEmail").selectedIndex = -1;
+
+			if (indexes.approval != -1)
+				$scope.editUserisEnrolled = vm.booleanOptions[indexes.enrolled];
+			else
+				document.getElementById("ddisEnrolled").selectedIndex = -1;				
+
 			if (indexes.project != -1)
 				$scope.editUserProject = vm.allprojects[indexes.project];
 			else
@@ -1198,38 +1364,38 @@ function selectedItemChange(item) {
 				$scope.editUserCourse = vm.courses[indexes.course];
 			else
 				document.getElementById("ddCourse").selectedIndex = -1;
-        };
+		};
 
 		// List of functions to find object references that match the user value
 		function findIndexGender(gender) {
 			if (gender)
-				for (var i=0; i<vm.genderOptions.length; i++)
-                    if (vm.genderOptions[i].type == gender)
-                        return i;
+				for (var i = 0; i < vm.genderOptions.length; i++)
+					if (vm.genderOptions[i].type == gender)
+						return i;
 			return -1;
 		};
 
 		function findIndexCollege(college) {
 			if (college)
-				for (var i=0; i<vm.colleges.length; i++)
-                    if (vm.colleges[i].name == college)
-                        return i;
+				for (var i = 0; i < vm.colleges.length; i++)
+					if (vm.colleges[i].name == college)
+						return i;
 			return -1;
 		};
 
 		function findIndexUserType(userType) {
 			if (userType)
-				for (var i=0; i<vm.typeranks.length; i++)
-                    if (vm.typeranks[i].name == userType)
-                        return i;
+				for (var i = 0; i < vm.typeranks.length; i++)
+					if (vm.typeranks[i].name == userType)
+						return i;
 			return -1;
 		};
 
 		function findIndexEditRank(rank) {
 			if (rank)
-				for (var i=0; i<vm.editRanks.length; i++)
-                    if (vm.editRanks[i] == rank)
-                        return i;
+				for (var i = 0; i < vm.editRanks.length; i++)
+					if (vm.editRanks[i] == rank)
+						return i;
 			return -1;
 		};
 
@@ -1244,32 +1410,32 @@ function selectedItemChange(item) {
 
 		function findIndexProject(project) {
 			if (project)
-				for (var i=0; i<vm.allprojects.length; i++)
-                    if (vm.allprojects[i].title == project)
-                        return i;
+				for (var i = 0; i < vm.allprojects.length; i++)
+					if (vm.allprojects[i].title == project)
+						return i;
 			return -1;
 		};
 
 		function findIndexTerm(term) {
 			if (term)
-				for (var i=0; i<vm.terms.length; i++)
-                    if (vm.terms[i].name == term)
-                        return i;
+				for (var i = 0; i < vm.terms.length; i++)
+					if (vm.terms[i].name == term)
+						return i;
 			return -1;
 		};
 
 		function findIndexCourse(course) {
 			if (course)
-				for (var i=0; i<vm.courses.length; i++)
-                    if (vm.courses[i].fullName == course)
-                        return i;
+				for (var i = 0; i < vm.courses.length; i++)
+					if (vm.courses[i].fullName == course)
+						return i;
 			return -1;
 		};
 
 		vm.newUser; // Stores new user after its created
 
 		// Add newly created user
-		vm.addUser = function() {
+		vm.addUser = function () {
 			vm.newUser = null;
 			// First check if required information is missing
 			if ($scope.addUserFirstName && $scope.addUserLastName && $scope.addUserEmail) {
@@ -1315,7 +1481,7 @@ function selectedItemChange(item) {
 					newUser["isEnrolled"] = false;
 
 					// Send POST request
-					User.create(newUser).then(function(data) {
+					User.create(newUser).then(function (data) {
 						if (data) {
 							if (data.data.success) {
 								document.getElementById('addUserMessage').innerHTML = 'Adding user was successful';
@@ -1338,7 +1504,7 @@ function selectedItemChange(item) {
 					}
 					else if (!validatePassword($scope.addUserPassword) || !validatePassword($scope.addUserPasswordConf)) {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Invalid Password<br>Passwords need to be at least 8 letters long and must contain at least one of each:' +
-						'<br>&nbsp;-&nbsp;Uppercase characters<br>&nbsp;-&nbsp;Lowercase characters<br>&nbsp;-&nbsp;Numbers<br>&nbsp;-&nbsp;Special characters: ! @ # $ % & * ( )';
+							'<br>&nbsp;-&nbsp;Uppercase characters<br>&nbsp;-&nbsp;Lowercase characters<br>&nbsp;-&nbsp;Numbers<br>&nbsp;-&nbsp;Special characters: ! @ # $ % & * ( )';
 					}
 					else {
 						document.getElementById('addUserMessage').innerHTML = 'Error: Mismatched Passwords';
@@ -1351,7 +1517,7 @@ function selectedItemChange(item) {
 		};
 
 		// Save changes to editing user
-		vm.saveChangesUser = function() {
+		vm.saveChangesUser = function () {
 			// First check if required information is missing
 			if ($scope.editUserFirstName && $scope.editUserLastName && $scope.editUserEmail) {
 				// Then check if email is valid
@@ -1381,6 +1547,17 @@ function selectedItemChange(item) {
 						vm.editingUser.piApproval = $scope.editUserPIApproval.type;
 					else
 						vm.editingUser.piApproval = null;
+					//User story #1419
+					if ($scope.editUserVerifyEmail)
+						vm.editingUser.verifiedEmail = $scope.editUserVerifyEmail.type;
+					else
+						vm.editingUser.verifiedEmail = null;
+
+					if ($scope.editUserisEnrolled)
+						vm.editingUser.isEnrolled = $scope.editUserisEnrolled.type;
+					else
+						vm.editingUser.verifiedEmail = null;		
+
 					if ($scope.editUserCollege)
 						vm.editingUser.college = $scope.editUserCollege.name;
 					else
@@ -1408,7 +1585,7 @@ function selectedItemChange(item) {
 						vm.editingUser["isEnrolled"] = false;
 
 					// Send PUT request
-					User.update({user: vm.editingUser}).then(function(data) {
+					User.update({ user: vm.editingUser }).then(function (data) {
 						if (data) {
 							if (data.data.success) {
 								document.getElementById('editUserMessage').innerHTML = 'Editing user was successful';
@@ -1488,7 +1665,7 @@ function selectedItemChange(item) {
 				});
 
 				// Update project if associated with user
-				if(found) {
+				if (found) {
 					ProjectService.editProject(project, project._id);
 				}
 			});
@@ -1498,24 +1675,24 @@ function selectedItemChange(item) {
 		}
 
 		// Update the project if user is added to one
-        function addUserToProject(user) {
+		function addUserToProject(user) {
 			var project;
 
 			for (var i = 0; i < vm.allprojects.length; i++) {
-                if (vm.allprojects[i].title == user.project) {
-                    project = vm.allprojects[i];
-                }
-            }
+				if (vm.allprojects[i].title == user.project) {
+					project = vm.allprojects[i];
+				}
+			}
 
 			// Check user isnt already part of the project (should not happen)
 			var exists = false;
 			for (var j = 0; j < project.members.length; j++) {
-                if (project.members[j] == user.email) {
-                    exists = true;
+				if (project.members[j] == user.email) {
+					exists = true;
 					break;
-                }
-            }
-			if(!exists) {
+				}
+			}
+			if (!exists) {
 				project.members_detailed.push(user.firstName + " " + user.lastName);
 				project.members.push(user.email);
 				ProjectService.editProject(project, project._id);
@@ -1523,18 +1700,18 @@ function selectedItemChange(item) {
 				vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 				vm.tabledata_p = eval(vm.tabledata_p);
 			}
-        };
+		};
 
 		// Update the project if user is removed from one
-        function removeUserFromProject(user, formerProject, sendNotification) {
-            var name = user.firstName + " " + user.lastName;
-            var email = user.email;
+		function removeUserFromProject(user, formerProject, sendNotification) {
+			var name = user.firstName + " " + user.lastName;
+			var email = user.email;
 
-            for (i = 0; i < vm.allprojects.length; i++) {
-                if (vm.allprojects[i].title == formerProject) {
-                    formerProject = vm.allprojects[i];
-                }
-            }
+			for (i = 0; i < vm.allprojects.length; i++) {
+				if (vm.allprojects[i].title == formerProject) {
+					formerProject = vm.allprojects[i];
+				}
+			}
 
 			if (formerProject) {
 				for (i = 0; i < formerProject.members.length; i++) {
@@ -1551,37 +1728,37 @@ function selectedItemChange(item) {
 			}
 			if (sendNotification)
 				sendEmailRemovedProject(name, email, formerProject);
-        };
+		};
 
 		// Send notification user has been removed from project
 		function sendEmailRemovedProject(name, email, formerProject) {
 			var email_msg =
-			{
-				recipient: email,
-				text: "Your current project has been cleared. For more information, please contact a PI.",
-				subject: "Project Cleared",
-				recipient2: vm.adminSettings.current_email,
-				text2: name + " has been successfully removed from project '" + (formerProject ? formerProject : 'unknown') + "'.",
-				subject2: "Removed user from project"
-			};
+				{
+					recipient: email,
+					text: "Your current project has been cleared. For more information, please contact a PI.",
+					subject: "Project Cleared",
+					recipient2: vm.adminSettings.current_email,
+					text2: name + " has been successfully removed from project '" + (formerProject ? formerProject : 'unknown') + "'.",
+					subject2: "Removed user from project"
+				};
 			User.nodeEmail(email_msg);
 		};
 
 		// Update the both projects if user is moved from one project to another
-        function updateProjectsUser(user, formerProject) {
+		function updateProjectsUser(user, formerProject) {
 			addUserToProject(user);
 			removeUserFromProject(user, formerProject, false);
-        };
+		};
 
 		vm.deletingUser;
 
-		vm.selectDeleteUser = function(user) {
+		vm.selectDeleteUser = function (user) {
 			vm.deletingUser = user;
 		};
 
 		// Delete selected user
-		vm.deleteUser = function() {
-			User.delete(vm.deletingUser._id).then(function(data) {
+		vm.deleteUser = function () {
+			User.delete(vm.deletingUser._id).then(function (data) {
 				if (data) {
 					if (data.data.message == 'successfully deleted!') {
 						document.getElementById('deleteUserMessage').innerHTML = 'Deleting user was successful';
@@ -1597,12 +1774,12 @@ function selectedItemChange(item) {
 					document.getElementById('deleteUserMessage').innerHTML = 'Error: HTTP response not received';
 					vm.deletingUser = null;
 				}
-            });
+			});
 		};
 
 		// Add/remove the user from vm.tabledata after user has been added/deleted
 
-		vm.updateTableAdd = function() {
+		vm.updateTableAdd = function () {
 			if (vm.newUser) {
 				vm.filteredusers.push(vm.newUser);
 				vm.tabledata = JSON.stringify(vm.filteredusers);
@@ -1610,14 +1787,14 @@ function selectedItemChange(item) {
 			}
 		};
 
-		vm.updateTableDelete = function() {
+		vm.updateTableDelete = function () {
 			if (vm.deletingUser) {
 				var ind = -1;
-				for (var i=0; i<vm.filteredusers.length; i++)
+				for (var i = 0; i < vm.filteredusers.length; i++)
 					if (vm.filteredusers[i]._id == vm.deletingUser._id)
 						ind = i;
 
-				if(ind != -1) {
+				if (ind != -1) {
 					vm.filteredusers.splice(ind, 1);
 				}
 				vm.tabledata = JSON.stringify(vm.filteredusers);
@@ -1626,119 +1803,119 @@ function selectedItemChange(item) {
 			vm.deletingUser = null;
 		};
 
-        vm.impersonate = function(user) {
-            adminService.impersonate(user).then(function(data) {
-                if (!data.redirectUrl) {//there was an error
-                    swal({
-                            title: 'Impersonation error.',
-                            text: 'There was an error when attempting to impersonate user: ' + user.email + "\n" + data.message,
-                            html: true,
-                            timer: 10000,
-                            showConfirmButton: true
-                        }
-                    );
-                } else {
-                    $window.location.href = data.redirectUrl;
-                    $window.location.reload();
-                }
-            });
-        };
+		vm.impersonate = function (user) {
+			adminService.impersonate(user).then(function (data) {
+				if (!data.redirectUrl) {//there was an error
+					swal({
+						title: 'Impersonation error.',
+						text: 'There was an error when attempting to impersonate user: ' + user.email + "\n" + data.message,
+						html: true,
+						timer: 10000,
+						showConfirmButton: true
+					}
+					);
+				} else {
+					$window.location.href = data.redirectUrl;
+					$window.location.reload();
+				}
+			});
+		};
 
-        //Used for filters
-        vm.getRank = getRank;
-        vm.filteredrank; //Value changed by getRank function after a usertype is selected in filter
-        vm.typeranks = [
-            {
-                name: 'Staff/Faculty',
-                ranks: [
-                    'Instructor',
-                    'Assitant Professor',
-                    'Associate Professor',
-                    'Full Professor',
-                    'Administrator',
-                    'Director'
+		//Used for filters
+		vm.getRank = getRank;
+		vm.filteredrank; //Value changed by getRank function after a usertype is selected in filter
+		vm.typeranks = [
+			{
+				name: 'Staff/Faculty',
+				ranks: [
+					'Instructor',
+					'Assitant Professor',
+					'Associate Professor',
+					'Full Professor',
+					'Administrator',
+					'Director'
 
-                ]
-            },
-            {
-                name: 'Pi/CoPi',
-                ranks: [
-                    'PI',
-                    'CoPI',
-                    'Coordinator',
-                    'External Member'
-                ]
-            },
-            {
-                name: 'Student',
-                ranks: [
-                    'Freshman',
-                    'Sophmore',
-                    'Junior',
-                    'Senior',
-                    'Masters',
-                    'PhD',
-                    'postDoc'
-                ]
-            },
-            {
-                name: 'Undefined',
-                ranks: [
-                    'Undefined'
-                ]
-            }
-        ];
+				]
+			},
+			{
+				name: 'Pi/CoPi',
+				ranks: [
+					'PI',
+					'CoPI',
+					'Coordinator',
+					'External Member'
+				]
+			},
+			{
+				name: 'Student',
+				ranks: [
+					'Freshman',
+					'Sophmore',
+					'Junior',
+					'Senior',
+					'Masters',
+					'PhD',
+					'postDoc'
+				]
+			},
+			{
+				name: 'Undefined',
+				ranks: [
+					'Undefined'
+				]
+			}
+		];
 
-        function getRank(usertype) {
-            if (usertype) {
-                vm.typeranks.forEach(function (obj) {
-                    if (obj.name == usertype.name) {
-                        vm.filteredrank = obj.ranks;
-                    }
+		function getRank(usertype) {
+			if (usertype) {
+				vm.typeranks.forEach(function (obj) {
+					if (obj.name == usertype.name) {
+						vm.filteredrank = obj.ranks;
+					}
 
-                });
-            }
-        };
+				});
+			}
+		};
 
-		vm.getAddRanks = function(usertype) {
+		vm.getAddRanks = function (usertype) {
 			//console.log(usertype, usertype.name);
 			var found = false;
-            if (usertype) {
-                vm.typeranks.forEach(function (obj) {
+			if (usertype) {
+				vm.typeranks.forEach(function (obj) {
 					//console.log(obj.name, usertype.name);
-                    if (obj.name == usertype.name) {
-                        vm.addRanks = obj.ranks;
+					if (obj.name == usertype.name) {
+						vm.addRanks = obj.ranks;
 						found = true;
-                    }
-                });
-            }
-			if(!found)
+					}
+				});
+			}
+			if (!found)
 				vm.addRanks = [];
 
-        };
+		};
 
-		vm.getEditRanks = function(usertype) {
+		vm.getEditRanks = function (usertype) {
 			//console.log(usertype, usertype.name);
 			var found = false;
-            if (usertype) {
-                vm.typeranks.forEach(function (obj) {
+			if (usertype) {
+				vm.typeranks.forEach(function (obj) {
 					//console.log(obj.name, usertype.name);
-                    if (obj.name == usertype.name) {
-                        vm.editRanks = obj.ranks;
+					if (obj.name == usertype.name) {
+						vm.editRanks = obj.ranks;
 						found = true;
-                    }
-                });
-            }
-			if(!found)
+					}
+				});
+			}
+			if (!found)
 				vm.editRanks = [];
-        };
+		};
 
 		// User Story #1313
 
-		vm.statusList = [{type: 'Active'}, {type: 'Disabled'}];
+		vm.statusList = [{ type: 'Active' }, { type: 'Disabled' }];
 
 		// Fill in edit project form with existing values in project
-		vm.editProject = function(project) {
+		vm.editProject = function (project) {
 
 			vm.editingProject = project;
 			vm.editingProjOrigTitle = project.title;
@@ -1774,10 +1951,10 @@ function selectedItemChange(item) {
 		function findIndexOwner(owner) {
 			var userName;
 			if (owner)
-				for (var i=0; i<vm.allusers.length; i++) {
+				for (var i = 0; i < vm.allusers.length; i++) {
 					userName = vm.allusers[i].firstName + ' ' + vm.allusers[i].lastName;
-                    if (userName == owner) {
-                        return i;
+					if (userName == owner) {
+						return i;
 					}
 				}
 			return -1;
@@ -1785,22 +1962,22 @@ function selectedItemChange(item) {
 
 		function findIndexStatus(status) {
 			if (status)
-				for (var i=0; i<vm.statusList.length; i++)
-                    if (vm.statusList[i].type == status)
-                        return i;
+				for (var i = 0; i < vm.statusList.length; i++)
+					if (vm.statusList[i].type == status)
+						return i;
 			return -1;
 		};
 
 		function findTermID(term) {
 			if (term)
-				for (var i=0; i<vm.terms.length; i++)
-                    if (vm.terms[i].name == term)
-                        return vm.terms[i]._id;
+				for (var i = 0; i < vm.terms.length; i++)
+					if (vm.terms[i].name == term)
+						return vm.terms[i]._id;
 			return -1;
 		};
 
 		// Save changes to edited project
-		vm.saveChangesProject = function() {
+		vm.saveChangesProject = function () {
 			// First check if required information is missing
 			if ($scope.editPTitle) {
 				// Then check if there are illegal values
@@ -1836,7 +2013,7 @@ function selectedItemChange(item) {
 					}
 					if ($scope.editPTerm) {
 						vm.editingProject.semester = $scope.editPTerm.name;
-						var newTermID =  findTermID(vm.editingProject.semester);
+						var newTermID = findTermID(vm.editingProject.semester);
 						vm.editingProject.term = newTermID;
 					}
 					else {
@@ -1844,12 +2021,12 @@ function selectedItemChange(item) {
 						vm.editingProject.term = null;
 					}
 					if ($scope.editPStatus)
-                        vm.editingProject.status = $scope.editPStatus.type;
+						vm.editingProject.status = $scope.editPStatus.type;
 					else
 						vm.editingProject.status = null;
 
 					// Send PUT request
-					ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function(data) {
+					ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function (data) {
 						if (data) {
 							if (data.data.message == 'Updated!') {
 								if (vm.editingProject.status == 'Disabled') {
@@ -1884,15 +2061,15 @@ function selectedItemChange(item) {
 
 		};
 
-		vm.reloadDeactivate = function() {
+		vm.reloadDeactivate = function () {
 			if (vm.editingProject.status == 'Disabled') {
 				$window.location.reload();
-				$timeout(function() {
-				// We must reevaluate the value in case it was changed by a subsequent
-				// watch handler in the digest.
+				$timeout(function () {
+					// We must reevaluate the value in case it was changed by a subsequent
+					// watch handler in the digest.
 
-				$scope.$digest()
-			  }, 0, false);
+					$scope.$digest()
+				}, 0, false);
 			}
 		}
 
@@ -1902,7 +2079,7 @@ function selectedItemChange(item) {
 				if (user.project == vm.editingProjOrigTitle) {
 					user.project = vm.editingProjNewTitle;
 					// Update the user with new project title
-					User.update({user: user});
+					User.update({ user: user });
 				}
 			});
 			// Refresh user panel
@@ -1911,13 +2088,13 @@ function selectedItemChange(item) {
 		};
 
 		// User story #1329 - add and remove video urls from an editing project
-		vm.addProjectVideo = function() {
+		vm.addProjectVideo = function () {
 			if ($scope.addPVidUrl) {
 				var vidUrl = $scope.addPVidUrl;
 				var processedVidUrl = ProcessVideoURL(vidUrl);
 				var processedVidThumb = createThumbURL(processedVidUrl);
 				var found = false;
-				if(vm.editingProject.video_url == null) {
+				if (vm.editingProject.video_url == null) {
 					vm.editingProject.video_url = [];
 				}
 				vm.editingProject.video_url.forEach(function (user, index) {
@@ -1925,12 +2102,12 @@ function selectedItemChange(item) {
 						found = true;
 				});
 				if (!found)
-					vm.editingProject.video_url.push({vidurl: processedVidUrl, vimgurl: processedVidThumb});
+					vm.editingProject.video_url.push({ vidurl: processedVidUrl, vimgurl: processedVidThumb });
 			}
 			$scope.addPVidUrl = null;
 		};
 
-		vm.removeProjectVideo = function(video) {
+		vm.removeProjectVideo = function (video) {
 			vm.editingProject.video_url.forEach(function (user, index) {
 				if (vm.editingProject.video_url[index].vidurl == video.vidurl) {
 					vm.editingProject.video_url.splice(index, 1);
@@ -1945,11 +2122,11 @@ function selectedItemChange(item) {
 					email = vm.editingProject.members[i];
 					console.log("Sending to " + email);
 					var email_msg =
-					{
-						recipient: email,
-						text: "Your current project '" + vm.editingProject.title + "' has been disabled. For more information, please contact a PI.",
-						subject: "Project No Longer Available"
-					};
+						{
+							recipient: email,
+							text: "Your current project '" + vm.editingProject.title + "' has been disabled. For more information, please contact a PI.",
+							subject: "Project No Longer Available"
+						};
 					User.nodeEmail(email_msg);
 					// removeUserFromProject(vm.editProjectUsers[i], vm.editingProject, false);
 					// vm.tabledata = JSON.stringify(vm.filteredusers);
@@ -1957,11 +2134,11 @@ function selectedItemChange(item) {
 				}
 				//vm.editingProject.status = null;
 				var admin_email_msg =
-				{
-					recipient: vm.adminSettings.current_email,
-					text: "The project '" + vm.editingProject.title + "' has been disabled. All students who were in the project have been notified and asked to contact a PI for further instruction.",
-					subject: "Project Deactivated"
-				};
+					{
+						recipient: vm.adminSettings.current_email,
+						text: "The project '" + vm.editingProject.title + "' has been disabled. All students who were in the project have been notified and asked to contact a PI for further instruction.",
+						subject: "Project Deactivated"
+					};
 				console.log("Sending to admin " + vm.adminSettings.current_email);
 				User.nodeEmail(admin_email_msg);
 				//vm.editingProject.status = null;
@@ -2014,7 +2191,7 @@ function selectedItemChange(item) {
 			else {
 				return "";
 			}
-        };
+		};
 
 		function createThumbURL(VideoURL) {
 			var videoID = "";
@@ -2035,51 +2212,51 @@ function selectedItemChange(item) {
 		};
 
 
-		vm.editProjectUsers = function(project) {
-         var detailedApproval = []
-         var promiseArr = []
-         project.members.map(email=>{
-            promiseArr.push(
-               new Promise((resolve,reject)=>{
-                  User.getByEmail(email).then((res)=>{
-                     console.log(res)
-                     User.get(res.data).then((user)=>{
-                        resolve(user.data)
-                        // let name = res.firstName + " " res.lastName
-                        // detailedApproval.push({
-                        //    name: name,
-                        //    approved: approvalStat
-                        // })
-                     })
-                  })
-               })
-            )
+		vm.editProjectUsers = function (project) {
+			var detailedApproval = []
+			var promiseArr = []
+			project.members.map(email => {
+				promiseArr.push(
+					new Promise((resolve, reject) => {
+						User.getByEmail(email).then((res) => {
+							console.log(res)
+							User.get(res.data).then((user) => {
+								resolve(user.data)
+								// let name = res.firstName + " " res.lastName
+								// detailedApproval.push({
+								//    name: name,
+								//    approved: approvalStat
+								// })
+							})
+						})
+					})
+				)
 
-         })
-         Promise.all(promiseArr).then(obj=>{
-            //console.log(obj)
-            obj.map(user=>{
-               //console.log(user)
-               name = user.firstName + " " + user.lastName
-               var approved = false
-               user.piProjectApproval ? approved = user.piProjectApproval : approved
-               detailedApproval.push({
-                  name: name,
-                  id: user._id,
-                  approved: approved
-               })
-            })
-            //console.log(detailedApproval)
-   			vm.editingProject = project;
+			})
+			Promise.all(promiseArr).then(obj => {
+				//console.log(obj)
+				obj.map(user => {
+					//console.log(user)
+					name = user.firstName + " " + user.lastName
+					var approved = false
+					user.piProjectApproval ? approved = user.piProjectApproval : approved
+					detailedApproval.push({
+						name: name,
+						id: user._id,
+						approved: approved
+					})
+				})
+				//console.log(detailedApproval)
+				vm.editingProject = project;
 
-            vm.editingProject.members_detailed_copy = detailedApproval
-            //console.log(vm.editingProject)
-   			vm.editingProjOrigMembers = Array.from(vm.editingProject.members);
-            $scope.$digest();
-         })
+				vm.editingProject.members_detailed_copy = detailedApproval
+				//console.log(vm.editingProject)
+				vm.editingProjOrigMembers = Array.from(vm.editingProject.members);
+				$scope.$digest();
+			})
 		};
 
-		vm.addStudentProject = function() {
+		vm.addStudentProject = function () {
 			if ($scope.addPUser) {
 				var addStudent = $scope.addPUser;
 				var found = false;
@@ -2088,65 +2265,65 @@ function selectedItemChange(item) {
 						found = true; break;
 					}
 				if (!found) { // Add student into project list if they are not already in the project
-               var name = addStudent.firstName + ' ' + addStudent.lastName
+					var name = addStudent.firstName + ' ' + addStudent.lastName
 					vm.editingProject.members_detailed_copy.push({
-                  name: name,
-                  approved: true
-               });
+						name: name,
+						approved: true
+					});
 					vm.editingProject.members.push(addStudent.email);
-               vm.editingProject.members_detailed.push(name);
+					vm.editingProject.members_detailed.push(name);
 				}
 			}
-         //console.log(vm.editingProject.members_detailed_copy)
+			//console.log(vm.editingProject.members_detailed_copy)
 		};
 
-      vm.approveStudentProject = function(student){
-         //console.log(student)
-         adminService.approveProject(student).then((res)=>{
-            //console.log(res)
-            $timeout(function() {
-            // We must reevaluate the value in case it was changed by a subsequent
-            // watch handler in the digest.
+		vm.approveStudentProject = function (student) {
+			//console.log(student)
+			adminService.approveProject(student).then((res) => {
+				//console.log(res)
+				$timeout(function () {
+					// We must reevaluate the value in case it was changed by a subsequent
+					// watch handler in the digest.
 
-            $scope.$digest()
-          }, 0, false);
-         })
-      }
-      vm.approveUser = function(user){
-         //console.log(vm.tabledata)
-         adminService.approveUser(user).then((res)=>{
-            //console.log(res)
-            $state.reload()
-            $timeout(function() {
-            // We must reevaluate the value in case it was changed by a subsequent
-            // watch handler in the digest.
+					$scope.$digest()
+				}, 0, false);
+			})
+		}
+		vm.approveUser = function (user) {
+			//console.log(vm.tabledata)
+			adminService.approveUser(user).then((res) => {
+				//console.log(res)
+				$state.reload()
+				$timeout(function () {
+					// We must reevaluate the value in case it was changed by a subsequent
+					// watch handler in the digest.
 
-            $scope.$digest()
-          }, 0, false);
-         })
-      }
+					$scope.$digest()
+				}, 0, false);
+			})
+		}
 
-      vm.unapproveUser = function(user){
-         //console.log(vm.tabledata)
-         adminService.unapproveUser(user).then((res)=>{
-            //console.log(res)
-            $state.reload()
-            $timeout(function() {
-            // We must reevaluate the value in case it was changed by a subsequent
-            // watch handler in the digest.
+		vm.unapproveUser = function (user) {
+			//console.log(vm.tabledata)
+			adminService.unapproveUser(user).then((res) => {
+				//console.log(res)
+				$state.reload()
+				$timeout(function () {
+					// We must reevaluate the value in case it was changed by a subsequent
+					// watch handler in the digest.
 
-            $scope.$digest()
-          }, 0, false);
-         })
-      }
-		vm.removeStudentProject = function(removingStudent) {
+					$scope.$digest()
+				}, 0, false);
+			})
+		}
+		vm.removeStudentProject = function (removingStudent) {
 			// Remove student from project roster
-         //console.log(removingStudent)
+			//console.log(removingStudent)
 			for (i = 0; i < vm.editingProject.members.length; i++) {
 				if (vm.editingProject.members_detailed_copy[i].name == removingStudent) {
 					vm.editingProject.members.splice(i, 1);
 					vm.editingProject.members_detailed.splice(i, 1);
-               vm.editingProject.members_detailed_copy.splice(i, 1);
+					vm.editingProject.members_detailed_copy.splice(i, 1);
 				}
 			}
 		};
@@ -2154,9 +2331,9 @@ function selectedItemChange(item) {
 		vm.editingProjectNew;
 
 		// Update Project's users information
-		vm.saveChangesProjectUsers = function() {
+		vm.saveChangesProjectUsers = function () {
 			// Send PUT request
-			ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function(data) {
+			ProjectService.editProject(vm.editingProject, vm.editingProject._id).then(function (data) {
 				if (data) {
 					if (data.data.message == 'Updated!') {
 						document.getElementById('editProjectMessage').innerHTML = 'Editing projects users was successful';
@@ -2179,11 +2356,12 @@ function selectedItemChange(item) {
 					vm.tabledata_p = JSON.stringify(vm.filteredprojects);
 					vm.tabledata_p = eval(vm.tabledata_p);
 				}
+				loadUsers();
 			});
 		};
 
 		function updateProjectUsers(project, projectMembers, formerProjectMembers) {
-			var i,j;
+			var i, j;
 			// Find added users and update them
 			for (i = 0; i < projectMembers.length; i++) {
 				var found = false;
@@ -2198,7 +2376,7 @@ function selectedItemChange(item) {
 					if (pUser) {
 						pUser.project = project;
 						pUser.joined_project = true;
-						User.update({user: pUser});
+						User.update({ user: pUser });
 					}
 				}
 			}
@@ -2216,7 +2394,7 @@ function selectedItemChange(item) {
 					if (pUser) {
 						pUser.project = null;
 						pUser.joined_project = false;
-						User.update({user: pUser});
+						User.update({ user: pUser });
 					}
 				}
 			}
@@ -2233,12 +2411,12 @@ function selectedItemChange(item) {
 
 		vm.deletingProject;
 
-		vm.selectDeleteProject = function(project) {
+		vm.selectDeleteProject = function (project) {
 			vm.deletingProject = project;
 		}
 
-		vm.deleteProject = function() {
-			ProjectService.delete(vm.deletingProject._id).then(function(data) {
+		vm.deleteProject = function () {
+			ProjectService.delete(vm.deletingProject._id).then(function (data) {
 				if (data) {
 					if (data.message == 'successfully deleted!') {
 						document.getElementById('deleteProjectMessage').innerHTML = 'Deleting project was successful';
@@ -2257,17 +2435,17 @@ function selectedItemChange(item) {
 					document.getElementById('deleteProjectMessage').innerHTML = 'Error: HTTP response not received';
 					vm.deletingProject = null;
 				}
-            });
+			});
 		};
 
-		vm.updatePTableDelete = function() {
+		vm.updatePTableDelete = function () {
 			if (vm.deletingProject) {
 				var ind = -1;
-				for (var i=0; i<vm.filteredprojects.length; i++)
+				for (var i = 0; i < vm.filteredprojects.length; i++)
 					if (vm.filteredprojects[i]._id == vm.deletingProject._id)
 						ind = i;
 
-				if(ind != -1) {
+				if (ind != -1) {
 					vm.filteredprojects.splice(ind, 1);
 				}
 				vm.tabledata_p = JSON.stringify(vm.filteredprojects);
@@ -2280,7 +2458,7 @@ function selectedItemChange(item) {
 
 		// User Story #1365
 
-		vm.addFacultyProject = function() {
+		vm.addFacultyProject = function () {
 			if ($scope.addPFaculty) {
 				var addFaculty = $scope.addPFaculty;
 				var found = false;
@@ -2297,7 +2475,7 @@ function selectedItemChange(item) {
 			}
 		};
 
-		vm.removeFacultyProject = function(faculty) {
+		vm.removeFacultyProject = function (faculty) {
 			// Remove faculty from project faculty roster
 			for (i = 0; i < vm.editingProject.faculty.length; i++) {
 				if (vm.editingProject.faculty[i].email == faculty.email) {
@@ -2306,7 +2484,7 @@ function selectedItemChange(item) {
 			}
 		};
 
-		vm.addMentorProject = function() {
+		vm.addMentorProject = function () {
 			if ($scope.addPMentor) {
 				var addMentor = $scope.addPMentor;
 				var found = false;
@@ -2323,7 +2501,7 @@ function selectedItemChange(item) {
 			}
 		};
 
-		vm.removeMentorProject = function(mentor) {
+		vm.removeMentorProject = function (mentor) {
 			// Remove mentor from project mentor roster
 			for (i = 0; i < vm.editingProject.mentor.length; i++) {
 				if (vm.editingProject.mentor[i].email == mentor.email) {
@@ -2332,312 +2510,325 @@ function selectedItemChange(item) {
 			}
 		};
 
-        //Ravi's Help
-        function AddTerms() {
-            var termsdata = {
-                name: "Fall 2017 Test",
-                start: new Date('2017', '08'),
-                end: new Date('2017', '12'),
-                deadline: new Date('2017, 08'),
-                active: true,
-                status: "Active",
-                open: true
-            };
+		//Ravi's Help
+		function AddTerms() {
+			var termsdata = {
+				name: "Fall 2017 Test",
+				start: new Date('2017', '08'),
+				end: new Date('2017', '12'),
+				deadline: new Date('2017, 08'),
+				active: true,
+				status: "Active",
+				open: true
+			};
 
-            reviewStudentAppService.addterm(termsdata).then(function (success) {
-            }, function (error) { });
-        };
+			reviewStudentAppService.addterm(termsdata).then(function (success) {
+			}, function (error) { });
+		};
 
-        vm.deleteemail = DeleteEmail;
-        vm.addemail = AddEmail;
-        vm.addsetting = AddSetting;
-        vm.deletesetting = DeleteSetting;
-        vm.savesetting = SaveSetting;
-        vm.toggleactive = ToggleActive;
-        vm.loadsettings = loadSettings;
+		vm.deleteemail = DeleteEmail;
+		vm.addemail = AddEmail;
+		vm.addsetting = AddSetting;
+		vm.deletesetting = DeleteSetting;
+		vm.savesetting = SaveSetting;		
+		vm.toggleactive = ToggleActive;
+		vm.loadsettings = loadSettings;
 
 
-        function ToggleActive(event)
-        {
-            if ($(event.target).val().length > 0) {
+		function ToggleActive(event) {
+			if ($(event.target).val().length > 0) {
 
-                $(".list-group .list-group-item").removeClass("active");
-                $(event.target).toggleClass("active");
+				$(".list-group .list-group-item").removeClass("active");
+				$(event.target).toggleClass("active");
 
-                vm.adminSettings.current_email = $(event.target).val();
-            }
-        }
+				vm.adminSettings.current_email = $(event.target).val();
+			}
+		}
 
-        function DeleteEmail(which)
-        {
-            if (vm.adminSettings.emails.length > 1 )
-            {
-                var indexToRemove = vm.adminSettings.emails.indexOf(which);
+		function DeleteEmail(which) {
+			if (vm.adminSettings.emails.length > 1) {
+				var indexToRemove = vm.adminSettings.emails.indexOf(which);
 
-                if (which === vm.adminSettings.current_email)
-                {
-                    if (indexToRemove == 0)
-                        vm.adminSettings.current_email = vm.adminSettings.emails[indexToRemove + 1];
-                    else
-                        vm.adminSettings.current_email =
-                            vm.adminSettings.emails[indexToRemove - 1];
-                }
+				if (which === vm.adminSettings.current_email) {
+					if (indexToRemove == 0)
+						vm.adminSettings.current_email = vm.adminSettings.emails[indexToRemove + 1];
+					else
+						vm.adminSettings.current_email =
+							vm.adminSettings.emails[indexToRemove - 1];
+				}
 
-                vm.adminSettings.emails.splice(indexToRemove, 1);
-            }
-            else
-                cannotdelete_msg();
-        }
-        function AddEmail()
-        {
-            if ($scope.newEmail != null)
-            {
-                vm.adminSettings.emails.push($scope.newEmail);
-                $scope.newEmail = "";
-            }
-            else
-                cannotadd_msg();
-        }
-        function DeleteSetting(setting)
-        {
-            adminService.deleteSettings(setting._id);
-        }
-        function AddSetting()
-        {
-            adminService.makeInitialSettings();
-        }
+				vm.adminSettings.emails.splice(indexToRemove, 1);
+			}
+			else
+				cannotdelete_msg();
+		}
+		function AddEmail() {
+			if ($scope.newEmail != null) {
+				vm.adminSettings.emails.push($scope.newEmail);
+				$scope.newEmail = "";
+			}
+			else
+				cannotadd_msg();
+		}
+		function DeleteSetting(setting) {
+			adminService.deleteSettings(setting._id);
+		}
+		function AddSetting() {
+			adminService.makeInitialSettings();
+		}
 
-        function SaveSetting()
-        {
-            if (vm.adminSettings.emailSignature) {
-                vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/\n/g, "<br/>");
-            }
-            adminService.saveAdminSettings(vm.adminSettings).then(function(data) {
-                vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/<br\/>/g, "\n");
-            });
-            savesettings_msg();
-        }
+		function SaveSetting() {
+			if (vm.adminSettings.projectDeadlineStartDate == null || vm.adminSettings.projectDeadlineEndDate == null) {
+				savesettings_msg_error();
+				return;
+			}				
+			if (vm.adminSettings.emailSignature) {
+				vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/\n/g, "<br/>");
+			}
+			var ed = new Date(vm.adminSettings.projectDeadlineEndDate);
+			ed.setHours(23, 59, 59, 0);			
+			vm.adminSettings.projectDeadlineEndDate = ed;
+			adminService.saveAdminSettings(vm.adminSettings).then(function (data) {				
+				vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/<br\/>/g, "\n");
+				var sd = new Date(vm.adminSettings.projectDeadlineStartDate);
+				vm.adminSettings.projectDeadlineStartDate = sd.toLocaleDateString();
+				var ed = new Date(vm.adminSettings.projectDeadlineEndDate);						
+				vm.adminSettings.projectDeadlineEndDate = ed.toLocaleDateString();
+			});
+			savesettings_msg();
+		}
 
-        init();
+		init();
 
-        function init() {
-            loadUsers();
-            loadProjects();
-            // User story - 1176
-            loadAllProjects();
-            // Joe's User Story
-            loadTerms();
-            loadSettings();
-            // User story 1345
-            loadCourses();
-        }
+		function init() {			
+			loadProjects();
+			// User story - 1176
+			loadAllProjects();
+			// Joe's User Story
+			loadTerms();
+			loadSettings();
+			// User story 1345
+			loadCourses();
+			loadUsers();
+		}
 
-        vm.adminSettings;
-        function loadSettings()
-        {
-            adminService.getAdminSettings().then(function (data)
-            {
-                var result = data;
+		vm.adminSettings;
+		function loadSettings() {
+			adminService.getAdminSettings().then(function (data) {
+				var result = data;
 
-                var getAdminSettings = function() {
-                    adminService.getAdminSettings().then(function (data) {
-                        vm.adminSettings = data;
-                        vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/<br\/>/g, "\n");
-                    });
-                };
+				var getAdminSettings = function () {
+					adminService.getAdminSettings().then(function (data) {						
+						vm.adminSettings = data;
+						vm.adminSettings.emailSignature = vm.adminSettings.emailSignature.replace(/<br\/>/g, "\n");
+						var sd = new Date(vm.adminSettings.projectDeadlineStartDate);
+						vm.adminSettings.projectDeadlineStartDate = sd.toLocaleDateString();
+						var ed = new Date(vm.adminSettings.projectDeadlineEndDate);						
+						vm.adminSettings.projectDeadlineEndDate = ed.toLocaleDateString();
+					});
+				};
 
-                if (result) {
-                    getAdminSettings();
-                } else {
-                    adminService.makeInitialSettings().then(function(response) {
-                        getAdminSettings();
-                    }, function(response) { });
-                }
-            });
-        }
+				if (result) {
+					getAdminSettings();
+				} else {
+					adminService.makeInitialSettings().then(function (response) {
+						getAdminSettings();
+					}, function (response) { });
+				}
+			});
+		}
 
-        //Load all user information
-        function loadUsers() {
-            var tempArray = [];
-            var tempArray2 = [];
-            adminService.loadAllUsers().then(function (data) {
-                vm.allusers = data;
-                vm.allusers.forEach(function (obj) {
-                    tempArray2.push(obj);
-                    if (obj.verifiedEmail == false) {
-                        tempArray2.pop();
-                        tempArray.push(obj);
-                    }
-                });
-                vm.users = tempArray2;
-                vm.unconfirmedusers = tempArray;
-                vm.filteredusers = vm.allusers;
-                vm.tabledata = JSON.stringify(vm.filteredusers);
-                vm.tabledata = eval(vm.tabledata);
-            });
-        }
+		//Load all user information
+		vm.usersWOProject;
+		function loadUsers() {
+			var tempArray = [];
+			var tempArray2 = [];
+			adminService.loadAllUsers().then(function (data) {
+				vm.allusers = data;
+				vm.usersWOProject = [];//array of users without projects
+				vm.allusers.forEach(function (obj) {
+					if (!obj.project && obj.userType =='Student') {
+						vm.usersWOProject.push(obj);//pushes users without projects to the array
+					}
+					tempArray2.push(obj);
+					if (obj.verifiedEmail == false) {
+						tempArray2.pop();
+						tempArray.push(obj);
+					}
+				});
+				vm.users = tempArray2;
+				vm.unconfirmedusers = tempArray;
+				vm.filteredusers = vm.allusers;
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+				vm.buildSiteSummary();
+			});
+		}
 
-        //Loads all project information for active projects
-        function loadProjects() {
-            reviewStudentAppService.loadProjects().then(function (data) {
-                vm.projects = data;
-            });
-        }
+		//Loads all project information for active projects
+		function loadProjects() {
+			reviewStudentAppService.loadProjects().then(function (data) {
+				vm.projects = data;
+				vm.buildSiteSummary();
+			});
+		}
 
 		//Loads all project information regardless of status
-        function loadAllProjects() {
-            reviewStudentAppService.loadAllProjects().then(function (data) {
-                vm.allprojects = data;
+		function loadAllProjects() {
+			reviewStudentAppService.loadAllProjects().then(function (data) {
+				vm.allprojects = data;
 				vm.filteredprojects = vm.allprojects;
 				// Store the project data into vm.tabledata_p
-                vm.tabledata_p = JSON.stringify(vm.allprojects);
-                vm.tabledata_p = eval(vm.tabledata_p);
-            });
-        }
+				vm.tabledata_p = JSON.stringify(vm.allprojects);
+				vm.tabledata_p = eval(vm.tabledata_p);
+				vm.buildSiteSummary();
+			});
+		}
 
-        //Joe's User Story
-        function loadTerms() {
-            reviewStudentAppService.loadTerms().then(function (data) {
-                vm.terms = data;
-                data.forEach(function(term) {
-                  if(term.status.currentSemester == true){
-                    vm.currentSem = term;
-                    // vm.currentSemesterName.push(term.name); // TODO Remove if not needed
-                    vm.currentSemesterName = term.name;
-                  }
-                })
+		//Joe's User Story
+		function loadTerms() {
+			reviewStudentAppService.loadTerms().then(function (data) {
+				vm.terms = data;
+				data.forEach(function (term) {
+					if (term.status.currentSemester == true) {
+						vm.currentSem = term;
+						// vm.currentSemesterName.push(term.name); // TODO Remove if not needed
+						vm.currentSemesterName = term.name;
+						vm.buildSiteSummary();
+					}
+				})
 
-            });
-        }
+			});
+		}
 
 		// Loads all courses & initializes course file list
-        function loadCourses() {
-            adminService.loadCourses().then(function (data) {
-                vm.courses = data;
-
-            });
+		function loadCourses() {
+			adminService.loadCourses().then(function (data) {
+				vm.courses = data;
+				vm.buildSiteSummary();
+			});
 			vm.courseFiles = [];
-        }
+		}
 
-        vm.uncheck = function () {
+		vm.uncheck = function () {
 
-            for (var i = 1; i <= 18; i++) {
-                $scope['query' + i] = '';
-            }
-            $scope.selectedusertype = '';
-            $scope.selecteduserrank = '';
+			for (var i = 1; i <= 18; i++) {
+				$scope['query' + i] = '';
+			}
+			$scope.selectedusertype = '';
+			$scope.selecteduserrank = '';
 			$scope.selecteduserproject = '';
-            $scope.SelectedProject = '';
-            $scope.selectedPiApproval = '';
-            $scope.selectedGoogle = '';
+			$scope.SelectedProject = '';
+			$scope.selectedPiApproval = '';
+			$scope.selectedGoogle = '';
 			// userstory #1176
 			$scope.selectedTerm = '';
 			// userstory #1352
 			$scope.selectedCouse = '';
 			$scope.selectedIsEnrolled = '';
-        }
+		}
 
 		vm.uncheckp = function () {
 			// userstory #1176
 			for (var i = 1; i <= 12; i++) {
-                $scope['queryp' + i] = '';
-            }
+				$scope['queryp' + i] = '';
+			}
 			$scope.selectedPOwner = '';
 			$scope.selectedPTerm = '';
 			$scope.selectedPStatus = '';
-        }
+		}
 
 		vm.uncheckc = function () {
 			// userstory #1346
 			for (var i = 1; i <= 4; i++) {
-                $scope['queryC' + i] = '';
-            }
+				$scope['queryC' + i] = '';
+			}
 			$scope.selectedCourseTerm = '';
-        }
+		}
 
 
-        //Filters users based on parameters
-        function filterUsers(selectedPiApproval, selectedGoogle, selectedusertype, selecteduserrank, SelectedProject, selectedTerm) {
-            vm.filteredusers = vm.allusers;
-            // n^2
-            if (SelectedProject) {
-                //alert("not null SelectedProject");
-                var studentsArray = [];
+		//Filters users based on parameters
+		function filterUsers(selectedPiApproval, selectedGoogle, selectedusertype, selecteduserrank, SelectedProject, selectedTerm) {
+			vm.filteredusers = vm.allusers;
+			// n^2
+			if (SelectedProject) {
+				//alert("not null SelectedProject");
+				var studentsArray = [];
 
-                vm.filteredusers.forEach(function (obj) {
-                    SelectedProject.members.forEach(function (obj2) {
-                        //alert(obj.email);
-                        //alert(obj2);
+				vm.filteredusers.forEach(function (obj) {
+					SelectedProject.members.forEach(function (obj2) {
+						//alert(obj.email);
+						//alert(obj2);
 
-                        // user is in project we selected
-                        if (obj.email == obj2) {
-                            studentsArray.push(obj);
-                            //alert(obj.email);
-                        }
+						// user is in project we selected
+						if (obj.email == obj2) {
+							studentsArray.push(obj);
+							//alert(obj.email);
+						}
 
-                    });
-                });
+					});
+				});
 
-                vm.filteredusers = studentsArray;
-                vm.tabledata = JSON.stringify(vm.filteredusers);
-                vm.tabledata = eval(vm.tabledata);
-            }
-            if (selectedusertype) {
-                var tempArray = [];
-                vm.filteredusers.forEach(function (obj) {
-                    if (obj.userType == selectedusertype.name) {
-                        tempArray.push(obj);
-                    }
-                });
-                vm.filteredusers = tempArray;
-                vm.tabledata = JSON.stringify(vm.filteredusers);
-                vm.tabledata = eval(vm.tabledata);
-            }
-            if (selecteduserrank) {
-                var tempArray = [];
-                vm.filteredusers.forEach(function (obj) {
-                    if (obj.userRank == selecteduserrank) {
-                        tempArray.push(obj);
-                    }
-                });
-                vm.filteredusers = tempArray;
-                vm.tabledata = JSON.stringify(vm.filteredusers);
-                vm.tabledata = eval(vm.tabledata);
-            }
+				vm.filteredusers = studentsArray;
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+			}
+			if (selectedusertype) {
+				var tempArray = [];
+				vm.filteredusers.forEach(function (obj) {
+					if (obj.userType == selectedusertype.name) {
+						tempArray.push(obj);
+					}
+				});
+				vm.filteredusers = tempArray;
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+			}
+			if (selecteduserrank) {
+				var tempArray = [];
+				vm.filteredusers.forEach(function (obj) {
+					if (obj.userRank == selecteduserrank) {
+						tempArray.push(obj);
+					}
+				});
+				vm.filteredusers = tempArray;
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+			}
 			// # userstory 1176
 			if (selectedTerm) {
-                var tempArray = [];
-                vm.filteredusers.forEach(function (obj) {
-                    if (obj.semester == selectedTerm.name) {
-                        tempArray.push(obj);
-                    }
-                });
-                vm.filteredusers = tempArray;
-                vm.tabledata = JSON.stringify(vm.filteredusers);
-                vm.tabledata = eval(vm.tabledata);
-            }
-            if (selectedPiApproval) {
-                var tempArray = [];
-                vm.filteredusers.forEach(function (obj) {
-                    if (obj.piApproval == false) {
-                        tempArray.push(obj);
-                    }
-                });
-                vm.filteredusers = tempArray;
-                vm.tabledata = JSON.stringify(vm.filteredusers);
-                vm.tabledata = eval(vm.tabledata);
-            }
-            if (selectedGoogle) {
-                var tempArray = [];
-                vm.filteredusers.forEach(function (obj) {
-                    if (obj.google) {
-                        tempArray.push(obj);
-                    }
-                });
-                vm.filteredusers = tempArray;
-                vm.tabledata = JSON.stringify(vm.filteredusers);
-                vm.tabledata = eval(vm.tabledata);
-            }
+				var tempArray = [];
+				vm.filteredusers.forEach(function (obj) {
+					if (obj.semester == selectedTerm.name) {
+						tempArray.push(obj);
+					}
+				});
+				vm.filteredusers = tempArray;
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+			}
+			if (selectedPiApproval) {
+				var tempArray = [];
+				vm.filteredusers.forEach(function (obj) {
+					if (obj.piApproval == false) {
+						tempArray.push(obj);
+					}
+				});
+				vm.filteredusers = tempArray;
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+			}
+			if (selectedGoogle) {
+				var tempArray = [];
+				vm.filteredusers.forEach(function (obj) {
+					if (obj.google) {
+						tempArray.push(obj);
+					}
+				});
+				vm.filteredusers = tempArray;
+				vm.tabledata = JSON.stringify(vm.filteredusers);
+				vm.tabledata = eval(vm.tabledata);
+			}
 			/* -- Both of these are inefficient and not in use, no users have either of these properties set
             if (mentor) // O(n^3) Very slow.
             {
@@ -2705,574 +2896,598 @@ function selectedItemChange(item) {
                 vm.tabledata = eval(vm.tabledata);
             }
 			*/
-        }
+		}
 
 		//Filters projects based on parameters
-        function filterProjects(selectedPTerm) {
+		function filterProjects(selectedPTerm) {
 			// # userstory 1176
 			vm.filteredprojects = vm.allprojects;
 			if (selectedPTerm) {
-                var tempArray = [];
-                vm.filteredprojects.forEach(function (obj) {
-                    if (obj.semester == selectedPTerm.name) {
-                        tempArray.push(obj);
-                    }
-                });
-                vm.filteredprojects = tempArray;
-                vm.tabledata_p = JSON.stringify(vm.filteredprojects);
-                vm.tabledata_p = eval(vm.tabledata_p);
-            }
+				var tempArray = [];
+				vm.filteredprojects.forEach(function (obj) {
+					if (obj.semester == selectedPTerm.name) {
+						tempArray.push(obj);
+					}
+				});
+				vm.filteredprojects = tempArray;
+				vm.tabledata_p = JSON.stringify(vm.filteredprojects);
+				vm.tabledata_p = eval(vm.tabledata_p);
+			}
 		}
 
-        function currentview(user) {
-            var projectTitle = "";
-            var project_title = "project_title";
-            vm.currentuserview = [];
-            ProjectService.getProject(user.project).then(function (data) {
-                if (data.kind == "ObjectId") {
-                    user[project_title] = user.project;
-                    vm.currentuserview.push(user);
-                }
-                else {
-                    projectTitle = data.title;
-                    user[project_title] = projectTitle;
-                    vm.currentuserview.push(user);
-                }
+		function currentview(user) {
+			var projectTitle = "";
+			var project_title = "project_title";
+			vm.currentuserview = [];
+			ProjectService.getProject(user.project).then(function (data) {
+				if (data.kind == "ObjectId") {
+					user[project_title] = user.project;
+					vm.currentuserview.push(user);
+				}
+				else {
+					projectTitle = data.title;
+					user[project_title] = projectTitle;
+					vm.currentuserview.push(user);
+				}
 
-            });
+			});
 
-        }
+		}
 
-        //Remove users
-        function RemoveUser(user) {
-            swal({
-                title: "Final warning!",
-                text: "You will not be able to redo this action",
-                type: "warning",
-                confirmButtonText: "Delete my account",
-                showCancelButton: true
-            }, function () {
-                User.delete(user._id).then(function () {
-                    delete_msg();
-                });
-            });
-        }
+		//Remove users
+		function RemoveUser(user) {
+			swal({
+				title: "Final warning!",
+				text: "You will not be able to redo this action",
+				type: "warning",
+				confirmButtonText: "Delete my account",
+				showCancelButton: true
+			}, function () {
+				User.delete(user._id).then(function () {
+					delete_msg();
+				});
+			});
+		}
 
-        //Out of scope function for Confirm/Reject unconfirmed users
-        function userinUnconfirmedfunc(user) {
-            vm.userinunconfirmed = user;
-        }
+		//Out of scope function for Confirm/Reject unconfirmed users
+		function userinUnconfirmedfunc(user) {
+			vm.userinunconfirmed = user;
+		}
 
-        //Confirm unconfirmed users
-        function ConfirmUser() {
-            if (vm.userinunconfirmed) {
-                var user = vm.userinunconfirmed;
-                user.piApproval = true;
-                user.isDecisionMade = true;
-                user.__v = 3;
-                user.verifiedEmail = true;
-                vm.message = "User has been Accepted!";
+		function verifyEmail(){
+			if (vm.userinunconfirmed){
+				user.verifiedEmail = true;
+				vm.message = "User email has been verified!";
 
-                // if a Pi is approved, mark him in the DB as a super user, so he can switch usertypes to student/faculty/pi without approval
-                if (user.userType == "Pi/CoPi") {
-                    user.isSuperUser = true;
-                }
+				reviewRegService.acceptProfile(user).then(function (data) {
+				});
+				confirm_msg();
+			}
+		}
+		
+		//Confirm unconfirmed users
+		function ConfirmUser() {
+			if (vm.userinunconfirmed) {
+				var user = vm.userinunconfirmed;
+				user.piApproval = true;
+				user.isDecisionMade = true;
+				user.__v = 3;
+				user.verifiedEmail = true;
+				vm.message = "User has been Accepted!";
 
-                // non-pi user must be restricted
-                else {
-                    user.isSuperUser = false;
-                }
+				// if a Pi is approved, mark him in the DB as a super user, so he can switch usertypes to student/faculty/pi without approval
+				if (user.userType == "Pi/CoPi") {
+					user.isSuperUser = true;
+				}
 
-                reviewRegService.acceptProfile(user).then(function (data) {
-                });
-                confirm_msg();
-            }
-        }
+				// non-pi user must be restricted
+				else {
+					user.isSuperUser = false;
+				}
 
-        //Reject Unconfirmed users
-        function RejectUser() {
-            if (vm.userinunconfirmed) {
-                var user = vm.userinunconfirmed;
-                user.verifiedEmail = false;
-                ProfileService.saveProfile(user).then(function (data) {
-                    Reject_msg();
-                });
-            }
-        }
+				reviewRegService.acceptProfile(user).then(function (data) {
+				});
+				confirm_msg();
+			}
+		}
 
-        function seed() {
+		//Reject Unconfirmed users
+		function RejectUser() {
+			if (vm.userinunconfirmed) {
+				var user = vm.userinunconfirmed;
+				user.verifiedEmail = false;
+				ProfileService.saveProfile(user).then(function (data) {
+					Reject_msg();
+				});
+			}
+		}
 
-            ProjectService.createTerm();
-        }
+		function seed() {
 
-        //Out of scope functions for Change User Type function
-        function userTypeChange(usertype) {
-            vm.usertypeinusertype = usertype;
-        }
+			ProjectService.createTerm();
+		}
 
-        function userChange(user) {
-            vm.userinusertype = user;
-        }
+		//Out of scope functions for Change User Type function
+		function userTypeChange(usertype) {
+			vm.usertypeinusertype = usertype;
+		}
 
-        //Change User Type
-        function changeUserType() {
-            if (vm.userinusertype || vm.usertypeinusertype) {
-                var user = vm.userinusertype;
-                user.userType = vm.usertypeinusertype;
-                user.modifying = true;
-                ProfileService.saveProfile(user).then(function (data) {
-                    reviewProfileService.updateProfile(user).then(function (data) {
-                        changeut_msg();
-                    });
-                });
-            }
-        }
+		function userChange(user) {
+			vm.userinusertype = user;
+		}
 
-        //Updated code	//userstory #1172
-//userstory #1172
-        function exportData() {
-            var date = new Date();
-            var todays = (date.getMonth() + 1) + "-" + date.getDate() + "-" + date.getFullYear() + "_";
-            vm.alldata;
-            var nArray = [];
-            adminService.loadAllUsers().then(function (data) {
-                vm.alldata = data;
-                vm.alldata.forEach(function (obj) {
-                    for (var j = 0; j < $scope.filteredItems.length; j++) {
-                        if (obj.email == $scope.filteredItems[j].email)
-                            nArray.push(obj);
-                    }
-                });
-                var res = alasql("SELECT pantherID,firstName,lastName,email,project,semester,department,college,skillItem,vipcredit,volunteer,independentstudy,rank,userType,appliedDate,RegDate,firstlogin_date INTO XLSX('" + todays + "Report.xlsx',{headers:true}) FROM ? ", [nArray]);
+		//Change User Type
+		function changeUserType() {
+			if (vm.userinusertype || vm.usertypeinusertype) {
+				var user = vm.userinusertype;
+				user.userType = vm.usertypeinusertype;
+				user.modifying = true;
+				ProfileService.saveProfile(user).then(function (data) {
+					reviewProfileService.updateProfile(user).then(function (data) {
+						changeut_msg();
+					});
+				});
+			}
+		}
 
-            });
-        }
+		//Updated code	//userstory #1172
+		//userstory #1172
+		function exportData() {
+			var date = new Date();
+			var todays = (date.getMonth() + 1) + "-" + date.getDate() + "-" + date.getFullYear() + "_";
+			vm.alldata;
+			var nArray = [];
+			adminService.loadAllUsers().then(function (data) {
+				vm.alldata = data;
+				vm.alldata.forEach(function (obj) {
+					for (var j = 0; j < $scope.filteredItems.length; j++) {
+						if (obj.email == $scope.filteredItems[j].email)
+							nArray.push(obj);
+					}
+				});
+				var res = alasql("SELECT pantherID,firstName,lastName,email,project,semester,department,college,skillItem,vipcredit,volunteer,independentstudy,rank,userType,appliedDate,RegDate,firstlogin_date INTO XLSX('" + todays + "Report.xlsx',{headers:true}) FROM ? ", [nArray]);
 
-      function confirm_msg() {
-        swal( {
-          title: "User Confirmed!",
-          text: "User's account has been confirmed!",
-          type: "info",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
-          $window.location.reload();
-        } );
-      };
+			});
+		}
 
-      function Reject_msg() {
-        swal( {
-          title: "User Rejected!",
-          text: "User's account has been deleted!",
-          type: "info",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
-          $window.location.reload();
-        } );
-      };
+		function confirm_msg() {
+			swal({
+				title: "User Confirmed!",
+				text: "User's account has been confirmed!",
+				type: "info",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
+				$window.location.reload();
+			});
+		};
 
-      function delete_msg() {
-        swal( {
-          title: "User Deleted!",
-          text: "User's account has been deleted!",
-          type: "info",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
-          $window.location.reload();
-        } );
-      };
+		function Reject_msg() {
+			swal({
+				title: "User Rejected!",
+				text: "User's account has been deleted!",
+				type: "info",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
+				$window.location.reload();
+			});
+		};
+
+		function delete_msg() {
+			swal({
+				title: "User Deleted!",
+				text: "User's account has been deleted!",
+				type: "info",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
+				$window.location.reload();
+			});
+		};
 
 
-      function changeut_msg() {
-        swal( {
-          title: "Usertype Changed",
-          text: "User's type has been changed!",
-          type: "info",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
+		function changeut_msg() {
+			swal({
+				title: "Usertype Changed",
+				text: "User's type has been changed!",
+				type: "info",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
 
-        } );
-      };
+			});
+		};
 
-      function changepro_msg() {
-        swal( {
-          title: "User's Project Changed",
-          text: "User's project has been changed!",
-          type: "success",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
+		function changepro_msg() {
+			swal({
+				title: "User's Project Changed",
+				text: "User's project has been changed!",
+				type: "success",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
 
-        } );
-      };
+			});
+		};
 
-      function semesterchange_msg() {
-        swal( {
-          title: "Semester Properties have Changed",
-          text: "",
-          type: "success",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
+		function semesterchange_msg() {
+			swal({
+				title: "Semester Properties have Changed",
+				text: "",
+				type: "success",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
 
-        } );
-      };
+			});
+		};
 
-      function semestercreate_msg() {
-        swal( {
-          title: "Semester has been Created",
-          text: "",
-          type: "success",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
+		function semestercreate_msg() {
+			swal({
+				title: "Semester has been Created",
+				text: "",
+				type: "success",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
 
-        } );
-      };
+			});
+		};
 
-      function semesterdelete_msg() {
-        swal( {
-          title: "Semester has been Deleted",
-          text: "",
-          type: "success",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
+		function semesterdelete_msg() {
+			swal({
+				title: "Semester has been Deleted",
+				text: "",
+				type: "success",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
 
-        } );
-      };
+			});
+		};
 
-      function defaultsemester_msg() {
-        swal( {
-          title: "Default Semester has been updated!",
-          text: "",
-          type: "success",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
+		function defaultsemester_msg() {
+			swal({
+				title: "Default Semester has been updated!",
+				text: "",
+				type: "success",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
 
-        } );
-      };
+			});
+		};
 
-      function changestat_msg() {
-        swal( {
-          title: "Project Status Has Changed",
-          text: "Project's status has been changed!",
-          type: "info",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
+		function changestat_msg() {
+			swal({
+				title: "Project Status Has Changed",
+				text: "Project's status has been changed!",
+				type: "info",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
 
-        } );
-      };
+			});
+		};
 
-      function changeclear_msg() {
-        swal( {
-          title: "User's Project Cleared",
-          text: "User's project has been cleared!",
-          type: "info",
-          confirmButtonText: "Continue",
-          allowOutsideClick: true,
-          timer: 10000,
-        }, function() {
+		function changeclear_msg() {
+			swal({
+				title: "User's Project Cleared",
+				text: "User's project has been cleared!",
+				type: "info",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			}, function () {
 
-        } );
-      };
+			});
+		};
 
-      function savesettings_msg() {
-        swal( {
-            title: "Admin Settings Saved",
-            text: "Admin preferences have been saved!",
-            type: "info",
-            confirmButtonText: "Continue",
-            allowOutsideClick: true,
-            timer: 10000,
-          },
-          function() {}
-        );
-      };
+		function savesettings_msg() {
+			swal({
+				title: "Settings Saved",
+				text: "Preferences have been saved!",
+				type: "info",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			},
+				function () { }
+			);
+		};
 
-        function test_msg(test) {
-          swal({
-            title: "This is a test, anddd: " + test,
-          },
-          function() {}
-          );
-        };
-        function cannotadd_msg()
-        {
-            swal({
-                    title: "Cannot Add Email",
-                    text: "Input is not a valid email address!",
-                    type: "warning",
-                    confirmButtonText: "Continue",
-                    allowOutsideClick: true,
-                    timer: 10000,},
-                function () {}
-            );
-        }
-        function cannotdelete_msg()
-        {
-            swal({
-                title: "Cannot Delete",
-            text: "You cannot delete the last email!",
-            type: "warning",
-                confirmButtonText: "Continue",
-            allowOutsideClick: true,
-            timer: 10000,},
-            function () {}
-        );
-        };
+		function savesettings_msg_error() {
+			swal({
+				title: "Settings Error",
+				text: "Incorrect deadline dates format",
+				type: "error",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			},
+				function () { }
+			);
+		};
 
-        //Change User's Project
-        function ChangeUserProject() {
-            var user = vm.cuser;
-            var project = vm.cproject;
-            if (user && project) {
-                var formerProject;
-                var name = user.firstName + " " + user.lastName;
-                var email = user.email;
-                for (i = 0; i < vm.projects.length; i++) {
-                    if (vm.projects[i].members.includes(email)) {
-                        formerProject = vm.projects[i];
-                    }
-                }
-                project.members[project.members.length] = email;
-                project.members_detailed[project.members_detailed.length] = name;
-                ProjectService.editProject(project, project._id);
-                if (formerProject) {
-                    for (i = 0; i < formerProject.members_detailed.length; i++) {
-                        if (formerProject.members_detailed[i] == name) {
-                            formerProject.members_detailed.splice(i, 1);
-                        }
-                    }
-                    for (i = 0; i < formerProject.members.length; i++) {
-                        if (formerProject.members[i] == email) {
-                            formerProject.members.splice(i, 1);
-                        }
-                    }
-                    ProjectService.editProject(formerProject, formerProject._id);
-                }
-                changepro_msg();
-            }
-        };
-        //Joe's User Story
-        function ChangeProjectStatus() {
-            //Get the project info based on the title being passed
-            //Change status
-            //Update DB
-            var project = vm.cproject;
+		function test_msg(test) {
+			swal({
+				title: "This is a test, anddd: " + test,
+			},
+				function () { }
+			);
+		};
+		function cannotadd_msg() {
+			swal({
+				title: "Cannot Add Email",
+				text: "Input is not a valid email address!",
+				type: "warning",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			},
+				function () { }
+			);
+		}
+		function cannotdelete_msg() {
+			swal({
+				title: "Cannot Delete",
+				text: "You cannot delete the last email!",
+				type: "warning",
+				confirmButtonText: "Continue",
+				allowOutsideClick: true,
+				timer: 10000,
+			},
+				function () { }
+			);
+		};
 
-            //console.log(project.title);
-            if (project) {
-                var selectedStatus = $scope.selectedStatus;
-                //console.log(selectedStatus);
-                if (selectedStatus == vm.status[0]) {
-                    selectedStatus = 'Active';
-                    //console.log(selectedStatus);
-                } else {
-                    selectedStatus = 'Disabled';
-                    //console.log(selectedStatus);
-                }
-                project.status = selectedStatus;
-                ProjectService.editProject(project, project._id);
-                //console.log("In the Projects!");
-            }
-            changestat_msg();
-        };
-        //Joe's User Story
-        function ChangeTermStatus() {
-            var term = vm.cterm;
+		//Change User's Project
+		function ChangeUserProject() {
+			var user = vm.cuser;
+			var project = vm.cproject;
+			if (user && project) {
+				var formerProject;
+				var name = user.firstName + " " + user.lastName;
+				var email = user.email;
+				for (i = 0; i < vm.projects.length; i++) {
+					if (vm.projects[i].members.includes(email)) {
+						formerProject = vm.projects[i];
+					}
+				}
+				project.members[project.members.length] = email;
+				project.members_detailed[project.members_detailed.length] = name;
+				ProjectService.editProject(project, project._id);
+				if (formerProject) {
+					for (i = 0; i < formerProject.members_detailed.length; i++) {
+						if (formerProject.members_detailed[i] == name) {
+							formerProject.members_detailed.splice(i, 1);
+						}
+					}
+					for (i = 0; i < formerProject.members.length; i++) {
+						if (formerProject.members[i] == email) {
+							formerProject.members.splice(i, 1);
+						}
+					}
+					ProjectService.editProject(formerProject, formerProject._id);
+				}
+				changepro_msg();
+			}
+		};
+		//Joe's User Story
+		function ChangeProjectStatus() {
+			//Get the project info based on the title being passed
+			//Change status
+			//Update DB
+			var project = vm.cproject;
 
-            var selectedTerm = $scope.selectedTerm.name;
-            if (term) {
-                var selectedTermStatus = $scope.selectedTermStatus;
-                if (selectedTermStatus == vm.active[0]) {
-                    selectedTermStatus = 'Active';
-                } else {
-                    selectedTermStatus = 'Disabled';
-                }
-                console.log(vm.projects);
-                for (i = 0; i < vm.projects.length; i++) {
-                    if (vm.projects[i].semester == selectedTerm) {
-                        vm.projects[i].status = selectedTermStatus;
-                        ProjectService.editProject(vm.projects[i], vm.projects[i]._id);
-                    }
-                }
-                term.status = selectedTermStatus;
-                ProjectService.editTerm(term, term._id);
-            }
-            changestat_msg();
-        }
+			//console.log(project.title);
+			if (project) {
+				var selectedStatus = $scope.selectedStatus;
+				//console.log(selectedStatus);
+				if (selectedStatus == vm.status[0]) {
+					selectedStatus = 'Active';
+					//console.log(selectedStatus);
+				} else {
+					selectedStatus = 'Disabled';
+					//console.log(selectedStatus);
+				}
+				project.status = selectedStatus;
+				ProjectService.editProject(project, project._id);
+				//console.log("In the Projects!");
+			}
+			changestat_msg();
+		};
+		//Joe's User Story
+		function ChangeTermStatus() {
+			var term = vm.cterm;
 
-      function createNewSemester( n, s, e ) {
+			var selectedTerm = $scope.selectedTerm.name;
+			if (term) {
+				var selectedTermStatus = $scope.selectedTermStatus;
+				if (selectedTermStatus == vm.active[0]) {
+					selectedTermStatus = 'Active';
+				} else {
+					selectedTermStatus = 'Disabled';
+				}
+				console.log(vm.projects);
+				for (i = 0; i < vm.projects.length; i++) {
+					if (vm.projects[i].semester == selectedTerm) {
+						vm.projects[i].status = selectedTermStatus;
+						ProjectService.editProject(vm.projects[i], vm.projects[i]._id);
+					}
+				}
+				term.status = selectedTermStatus;
+				ProjectService.editTerm(term, term._id);
+			}
+			changestat_msg();
+		}
 
-        if( vm.currentSwitchStatus == null ) { vm.currentSwitchStatus = false; }
-        if( vm.viewableSwitchStatus == null ) { vm.viewableSwitchStatus = false; }
-        if( vm.applicableSwitchStatus == null ) { vm.applicableSwitchStatus = false; }
-        if( vm.proposableSwitchStatus == null ) { vm.proposableSwitchStatus = false; }
+		function createNewSemester(n, s, e) {
 
-        var termData = {
-          name: n,
-          start: new Date( s ),
-          end: new Date( e ),
-          active: true,
-          status: {
-            currentSemester: vm.currentSwitchStatus,
-            viewable: vm.viewableSwitchStatus,
-            openForProposal: vm.proposableSwitchStatus,
-            openForApply: vm.applicableSwitchStatus
-          }
-        };
-        ProjectService.createTerm( termData ).then( function( success ) {
-          loadTerms();
-          resetSemSettings();
-          // semestercreate_msg();
-        }, function( error ) {} );
-        // $scope.selectedTerm = termData;
-      }
+			if (vm.currentSwitchStatus == null) { vm.currentSwitchStatus = false; }
+			if (vm.viewableSwitchStatus == null) { vm.viewableSwitchStatus = false; }
+			if (vm.applicableSwitchStatus == null) { vm.applicableSwitchStatus = false; }
+			if (vm.proposableSwitchStatus == null) { vm.proposableSwitchStatus = false; }
 
-      function setDefaultSemester( semester ) {
-        var term = semester;
-        var user = vm.cuser;
+			var termData = {
+				name: n,
+				start: new Date(s),
+				end: new Date(e),
+				active: true,
+				status: {
+					currentSemester: vm.currentSwitchStatus,
+					viewable: vm.viewableSwitchStatus,
+					openForProposal: vm.proposableSwitchStatus,
+					openForApply: vm.applicableSwitchStatus
+				}
+			};
+			ProjectService.createTerm(termData).then(function (success) {
+				loadTerms();
+				resetSemSettings();
+				// semestercreate_msg();
+			}, function (error) { });
+			// $scope.selectedTerm = termData;
+		}
 
-        if ( term && user ) {
-          user.selectedSemester = term;
-          ProfileService.saveProfile(user).then( function( success ) {
-            updateSelectedSemesterQueries(term.name);
-            vm.defaultSemester = term.name;
-            defaultsemester_msg();
-          }, function( error ) {} );
-        }
-      }
+		function setDefaultSemester(semester) {
+			var term = semester;
+			var user = vm.cuser;
 
-      function editSemButton (semester) {
-        vm.semesterToBeEdited = semester;
-        if(semester) {
-          $scope.semName = semester.name;
-          $scope.startDate = semester.start;
-          $scope.endDate = semester.end;
-          vm.cStatus = semester.status.currentSemester;
-          vm.vStatus = semester.status.viewable;
-          vm.pStatus = semester.status.openForProposal;
-          vm.aStatus = semester.status.openForApply;
-          vm.currentSwitchStatus = vm.cStatus;
-          vm.viewableSwitchStatus = vm.vStatus;
-          vm.proposableSwitchStatus = vm.pStatus;
-          vm.applicableSwitchStatus = vm.aStatus;
-        }
-      }
+			if (term && user) {
+				user.selectedSemester = term;
+				ProfileService.saveProfile(user).then(function (success) {
+					updateSelectedSemesterQueries(term.name);
+					vm.defaultSemester = term.name;
+					defaultsemester_msg();
+				}, function (error) { });
+			}
+		}
 
-      function makeSemesterChanges() {
-        var semester = vm.semesterToBeEdited;
+		function editSemButton(semester) {
+			vm.semesterToBeEdited = semester;
+			if (semester) {
+				$scope.semName = semester.name;
+				$scope.startDate = semester.start;
+				$scope.endDate = semester.end;
+				vm.cStatus = semester.status.currentSemester;
+				vm.vStatus = semester.status.viewable;
+				vm.pStatus = semester.status.openForProposal;
+				vm.aStatus = semester.status.openForApply;
+				vm.currentSwitchStatus = vm.cStatus;
+				vm.viewableSwitchStatus = vm.vStatus;
+				vm.proposableSwitchStatus = vm.pStatus;
+				vm.applicableSwitchStatus = vm.aStatus;
+			}
+		}
 
-        var status = {
-          currentSemester: vm.currentSwitchStatus,
-          viewable: vm.viewableSwitchStatus,
-          openForProposal: vm.proposableSwitchStatus,
-          openForApply: vm.applicableSwitchStatus
-        }
+		function makeSemesterChanges() {
+			var semester = vm.semesterToBeEdited;
 
-        if ( semester ) {
-          semester.name = $scope.semName;
-          semester.start = $scope.startDate;
-          semester.end = $scope.endDate;
-          semester.status = status;
+			var status = {
+				currentSemester: vm.currentSwitchStatus,
+				viewable: vm.viewableSwitchStatus,
+				openForProposal: vm.proposableSwitchStatus,
+				openForApply: vm.applicableSwitchStatus
+			}
 
-          ProjectService.editTerm( semester, semester._id ).then( function( success ) {
-            console.log( "Successfully Edited Semester" );
-            semesterchange_msg();
-            resetSemSettings();
-          }, function( error ) {} );
-        }
+			if (semester) {
+				semester.name = $scope.semName;
+				semester.start = $scope.startDate;
+				semester.end = $scope.endDate;
+				semester.status = status;
 
-      }
+				ProjectService.editTerm(semester, semester._id).then(function (success) {
+					console.log("Successfully Edited Semester");
+					semesterchange_msg();
+					resetSemSettings();
+				}, function (error) { });
+			}
 
-      function delSemButton (semester) {
-        vm.semesterToBeDeleted = semester;
-      }
+		}
 
-      function deleteSemester() {
-        var term = vm.semesterToBeDeleted;
+		function delSemButton(semester) {
+			vm.semesterToBeDeleted = semester;
+		}
 
-        if ( term ) {
-          ProjectService.deleteTerm( term._id ).then( function( success ) {
-            console.log( "Successfully Deleted Semester" );
-            delete $scope.selectedTerm;
-            loadTerms();
-            semesterdelete_msg();
-          }, function( error ) {} );
-        }
-      }
+		function deleteSemester() {
+			var term = vm.semesterToBeDeleted;
 
-      function resetSemSettings() {
-          delete $scope.semName;
-          delete $scope.startDate;
-          delete $scope.endDate;
-          delete vm.cStatus;
-          delete vm.vStatus;
-          delete vm.pStatus;
-          delete vm.aStatus;
-          delete vm.currentSwitchStatus;
-          delete vm.viewableSwitchStatus;
-          delete vm.proposableSwitchStatus;
-          delete vm.applicableSwitchStatus;
-      }
+			if (term) {
+				ProjectService.deleteTerm(term._id).then(function (success) {
+					console.log("Successfully Deleted Semester");
+					delete $scope.selectedTerm;
+					loadTerms();
+					semesterdelete_msg();
+				}, function (error) { });
+			}
+		}
 
-      //Remove a user from a project
-      function ClearProject() {
-          var user = vm.cuser;
-          if (user) {
-              var formerProject;
-              var name = user.firstName + " " + user.lastName;
-              var email = user.email;
+		function resetSemSettings() {
+			delete $scope.semName;
+			delete $scope.startDate;
+			delete $scope.endDate;
+			delete vm.cStatus;
+			delete vm.vStatus;
+			delete vm.pStatus;
+			delete vm.aStatus;
+			delete vm.currentSwitchStatus;
+			delete vm.viewableSwitchStatus;
+			delete vm.proposableSwitchStatus;
+			delete vm.applicableSwitchStatus;
+		}
 
-              for (i = 0; i < vm.projects.length; i++) {
-                  if (vm.projects[i].members.includes(email)) {
-                      formerProject = vm.projects[i];
-                  }
-              }
+		//Remove a user from a project
+		function ClearProject() {
+			var user = vm.cuser;
+			if (user) {
+				var formerProject;
+				var name = user.firstName + " " + user.lastName;
+				var email = user.email;
 
-              var email_msg =
-                  {
-                      recipient: email,
-                      text: "Your current project has been cleared. For more information, please contact a PI.",
-                      subject: "Project Cleared",
-                      recipient2: vm.adminSettings.current_email,
-                      text2: name + " has been successfully removed from project '" + (formerProject ? formerProject : 'unknown') + "'.",
-                      subject2: "Removed user from project"
-                  };
-              User.nodeEmail(email_msg);
+				for (i = 0; i < vm.projects.length; i++) {
+					if (vm.projects[i].members.includes(email)) {
+						formerProject = vm.projects[i];
+					}
+				}
 
-              if (formerProject) {
-                  for (i = 0; i < formerProject.members_detailed.length; i++) {
-                      if (formerProject.members_detailed[i] == name) {
-                          formerProject.members_detailed.splice(i, 1);
-                      }
-                  }
-                  for (i = 0; i < formerProject.members.length; i++) {
-                      if (formerProject.members[i] == email) {
-                          formerProject.members.splice(i, 1);
-                      }
-                  }
-                  ProjectService.editProject(formerProject, formerProject._id);
-              }
-              changeclear_msg();
-          }
-      };
+				var email_msg =
+					{
+						recipient: email,
+						text: "Your current project has been cleared. For more information, please contact a PI.",
+						subject: "Project Cleared",
+						recipient2: vm.adminSettings.current_email,
+						text2: name + " has been successfully removed from project '" + (formerProject ? formerProject : 'unknown') + "'.",
+						subject2: "Removed user from project"
+					};
+				User.nodeEmail(email_msg);
 
-    }
+				if (formerProject) {
+					for (i = 0; i < formerProject.members_detailed.length; i++) {
+						if (formerProject.members_detailed[i] == name) {
+							formerProject.members_detailed.splice(i, 1);
+						}
+					}
+					for (i = 0; i < formerProject.members.length; i++) {
+						if (formerProject.members[i] == email) {
+							formerProject.members.splice(i, 1);
+						}
+					}
+					ProjectService.editProject(formerProject, formerProject._id);
+				}
+				changeclear_msg();
+			}
+		};
+
+	}
 })();

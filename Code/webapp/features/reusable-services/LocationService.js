@@ -13,7 +13,7 @@
                 reviewUser: locationService.getAbsoluteUrl("/#/reviewuser"),
                 reviewProject: locationService.getAbsoluteUrl("/#/reviewproject"),
                 sendMessage: locationService.getAbsoluteUrl("/#/sendmessage"),
-                verifyUser: locationService.getAbsoluteUrl("/#/verifyuser"),
+                verifyUser: locationService.getAbsoluteUrl("/#/adminpanel"),
                 projectDetailed: locationService.getAbsoluteUrl("/#/vip-projects-detailed")
             };
             locationService.vipApiUrls = {
